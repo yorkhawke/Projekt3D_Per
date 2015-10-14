@@ -51,7 +51,7 @@ void LoadObject::LoadObjFile(wstring fileName)
 					float fx, fy, fz;
 					fileIn >> fx >> fy >> fz;
 					vPos.push_back(XMFLOAT3(fx, fy + 20.0f, fz));
-					nrVertrices++;
+					nrIndexes++;
 				}
 				if (check == 't')
 				{
@@ -90,7 +90,7 @@ void LoadObject::LoadObjFile(wstring fileName)
 
 						indPos.push_back(indP);
 
-						nrIndexes++;
+						nrVertrices++;
 
 						check = fileIn.get();
 
@@ -105,8 +105,8 @@ void LoadObject::LoadObjFile(wstring fileName)
 			}
 		}
 
-		Vertices = new Vertex[nrIndexes];
-		for (int i = 0; i < nrIndexes; i++)
+		Vertices = new Vertex[nrVertrices];
+		for (int i = 0; i < nrVertrices; i++)
 		{
 			Vertices[i].Position = vPos[indPos[i] - 1];
 			Vertices[i].Normal = vNor[indNor[i] - 1];
@@ -115,4 +115,16 @@ void LoadObject::LoadObjFile(wstring fileName)
 
 		fileIn.close();
 	}
+}
+
+void LoadObject::render(ID3D11DeviceContext* devCont)
+{
+	UINT32 vertexSize = sizeof(Vertex);
+	UINT32 offset = 0;
+
+	devCont->IASetVertexBuffers(0, 1, &VertexB, &vertexSize, &offset);
+	devCont->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	devCont->PSSetShaderResources(0, 1, &Tex);
+
+	devCont->Draw(nrVertrices, 0);
 }

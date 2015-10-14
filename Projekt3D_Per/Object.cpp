@@ -7,7 +7,6 @@ Entity::Entity()
 
 Entity::~Entity()
 {
-	VertexB->Release();
 	Tex->Release();
 	delete Vertices;
 	delete indices;
@@ -22,7 +21,7 @@ void Entity::createbuff(ID3D11Device* Device)
 	ZeroMemory(&vbdesc, sizeof(vbdesc));
 
 	vbdesc.Usage = D3D11_USAGE_DEFAULT;
-	vbdesc.ByteWidth = 8 * 4 * nrVertrices;
+	vbdesc.ByteWidth = sizeof(Vertex)*nrVertrices;
 	vbdesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
 	vbdesc.CPUAccessFlags = 0;
 	vbdesc.MiscFlags = 0;
@@ -33,6 +32,7 @@ void Entity::createbuff(ID3D11Device* Device)
 	Data.pSysMem = Vertices;
 
 	hr = Device->CreateBuffer(&vbdesc, &Data, &VertexB);
+
 }
 
 void Entity::render(ID3D11DeviceContext* devCont)
@@ -41,6 +41,7 @@ void Entity::render(ID3D11DeviceContext* devCont)
 	UINT32 offset = 0;
 
 	devCont->IASetIndexBuffer(IndexB, DXGI_FORMAT_R32_UINT, 0);
+
 	devCont->IASetVertexBuffers(0, 1, &VertexB, &vertexSize, &offset);
 	devCont->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	devCont->PSSetShaderResources(0, 1, &Tex);

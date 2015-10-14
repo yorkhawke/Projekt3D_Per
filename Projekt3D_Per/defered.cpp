@@ -149,7 +149,6 @@ void Defered::StartUp(ID3D11Device* dev, ID3D11DeviceContext *devCon, IDXGISwapC
 
 	dev->CreateBuffer(&bd, &d, &ScreenBuff);
 	//----------------------------BUFFER-------------------------------------
-
 }
 
 //set rendertarget
@@ -161,7 +160,7 @@ void Defered::OMSetRender(ID3D11Device* dev, ID3D11DeviceContext *devCon, ID3D11
 //Buffer
 void Defered::clearBuffer(ID3D11DeviceContext *devCon)
 {
-	float clearColor[] = { 0.0f, 1.0f, 0.0f, 1 };
+	float clearColor[] = { 0.0f, 0.0f, 0.0f, 1 };
 
 	for (int i = 0; i < BufferC; i++)
 	{

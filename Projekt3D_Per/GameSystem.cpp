@@ -96,6 +96,11 @@ void GameSystem::StartGame(float gametime, float fps,HINSTANCE hinstance)
 
 	hMap.CreateMap(300,300,300,300,device,deviceContext);
 
+	obj.LoadObjFile(L"Tank.obj");
+	obj.createTexture(device, deviceContext, L"shit.jpg");
+	obj.createbuff(device);
+
+
 }
 
 void GameSystem::CreateBuffers()
@@ -227,7 +232,7 @@ void GameSystem::Render()
 	//Felet ligger i att mina shaderresources inte skrivs till....
 
 	hMap.render(deviceContext);
-
+	obj.render(deviceContext);
 	DeferedRendering.setShaderResources(deviceContext);
 
 	DeferedRendering.setBackBufferShaders(deviceContext);

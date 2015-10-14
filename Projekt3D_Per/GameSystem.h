@@ -9,6 +9,7 @@
 #include "Object.h"
 #include "LandObject.h"
 #include "defered.h"
+#include "LoadObject.h"
 
 
 struct Matrix
@@ -46,6 +47,7 @@ private:
 	ID3D11RenderTargetView* Backbuffer;
 	//map
 	LandObject hMap;
+	LoadObject obj;
 	Defered DeferedRendering;
 
 

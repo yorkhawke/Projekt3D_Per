@@ -10,7 +10,7 @@ public:
 	~LoadObject();
 
 	void LoadObjFile(wstring fileName);
-
+	void render(ID3D11DeviceContext* devCont);
 private:
 
 
