@@ -8,6 +8,8 @@
 #include "Cam.h"
 #include "Object.h"
 #include "LandObject.h"
+#include "defered.h"
+
 
 struct Matrix
 {
@@ -22,7 +24,7 @@ private:
 	//system classes goes here
 	WindowsMain mainHwnd;
 	Dx directX;
-	bool Defered = false;
+	bool defRender = true;
 	Time gameTime;
 	Camera cam;
 
@@ -35,6 +37,7 @@ private:
 	ID3D11PixelShader* PixelShader;
 	ID3D11InputLayout* VertexLayout;
 
+	ID3D11SamplerState* SampleState;
 	ID3D11Buffer* ScreenBuffer;
 	ID3D11Buffer* MatrixBuffer;
 	Matrix matrix;
@@ -43,7 +46,7 @@ private:
 	ID3D11RenderTargetView* Backbuffer;
 	//map
 	LandObject hMap;
-
+	Defered DeferedRendering;
 
 
 public:

@@ -99,6 +99,7 @@ float4 main(VS_OUT input) : SV_TARGET
 	//return (am, am, am, 1.0f);
 	//return input.Nor;
 	//return input.Pos, 1.0f;
+	
 	finalCol += ambient;
 	finalCol = finalCol *diff;
 

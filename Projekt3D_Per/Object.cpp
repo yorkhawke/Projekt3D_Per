@@ -44,6 +44,7 @@ void Entity::render(ID3D11DeviceContext* devCont)
 	devCont->IASetVertexBuffers(0, 1, &VertexB, &vertexSize, &offset);
 	devCont->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	devCont->PSSetShaderResources(0, 1, &Tex);
+
 	devCont->DrawIndexed(nrIndexes, 0, 0);
 }
 

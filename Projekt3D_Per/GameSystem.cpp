@@ -57,8 +57,9 @@ void GameSystem::StartGame(float gametime, float fps,HINSTANCE hinstance)
 	//time
 	gameTime.Reset();
 	gameTime.Update();	
+
 	//Camera
-	cam.SetProj(0.35*XM_PI, ScreenWidth / ScreenHeight, 0.5f, 20000.0f);
+	cam.SetProj(0.35*XM_PI, ScreenWidth / (ScreenHeight*1.0f), 0.5f, 20000.0f);
 	cam.Update();
 	// dx
 	if (SUCCEEDED(CreateSwapChain()))
@@ -73,9 +74,19 @@ void GameSystem::StartGame(float gametime, float fps,HINSTANCE hinstance)
 		pSwapChainBuffer->Release();
 	}
 	//create shaders
-	createShaders();
+
+	//TEST
+	//createShaders();
+
+	//Defered
+
+	DeferedRendering.StartUp(device, deviceContext,swapChain);
+
 	//Create Objects etc....
-	setShaders();
+
+	//TEST
+	//setShaders();
+
 	//store matrixes
 	XMStoreFloat4x4(&matrix.World, XMMatrixTranspose(XMMatrixScaling(1.0, 1.0, 1.0)));
 	XMStoreFloat4x4(&matrix.View, XMMatrixTranspose(cam.GetViewMa()));
@@ -84,37 +95,32 @@ void GameSystem::StartGame(float gametime, float fps,HINSTANCE hinstance)
 	CreateBuffers();
 
 	hMap.CreateMap(300,300,300,300,device,deviceContext);
+
 }
 
 void GameSystem::CreateBuffers()
 {
-	//XMFLOAT3 p[4];
-	//p[0].x = -1.0f;
-	//p[0].z = 0.0f;
-	//p[0].y = -1.0f;
-	//p[1].x = -1.0f;
-	//p[1].z = 0.0f;
-	//p[1].y = 1.0f;
-	//p[2].x = 1.0f;
-	//p[2].z = 0.0f;
-	//p[2].y = -1.0f;
-	//p[3].x = 1.0f;
-	//p[3].z = 0.0f;
-	//p[3].y = 1.0f;
 
-	//D3D11_BUFFER_DESC bd;
-	//bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-	//bd.ByteWidth = sizeof(XMFLOAT3)* 4;
-	//bd.CPUAccessFlags = 0;
-	//bd.Usage = D3D11_USAGE_DEFAULT;
-	//bd.StructureByteStride = NULL;
-	//bd.MiscFlags = NULL;
+	// SamplerState
+	D3D11_SAMPLER_DESC sd;
 
-	//D3D11_SUBRESOURCE_DATA d;
-	//ZeroMemory(&d, sizeof(d));
-	//d.pSysMem = p;
+	sd.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
+	sd.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
+	sd.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
+	sd.BorderColor[0] = 0;
+	sd.BorderColor[1] = 0;
+	sd.BorderColor[2] = 0;
+	sd.BorderColor[3] = 0;
+	sd.ComparisonFunc = D3D11_COMPARISON_NEVER;
+	sd.Filter = D3D11_FILTER_ANISOTROPIC;
+	sd.MaxAnisotropy = 8;
+	sd.MaxLOD = D3D11_FLOAT32_MAX;
+	sd.MinLOD = 0;
+	sd.MipLODBias = 0;
 
-	//device->CreateBuffer(&bd, &d, &ScreenBuffer);
+	device->CreateSamplerState(&sd, &SampleState);
+
+	deviceContext->PSSetSamplers(0, 1, &SampleState);
 
 	//WorldViewProj Matrixes
 	D3D11_BUFFER_DESC WorMatri;
@@ -131,10 +137,12 @@ void GameSystem::CreateBuffers()
 	DATA.pSysMem = &matrix;
 
 	device->CreateBuffer(&WorMatri, &DATA, &MatrixBuffer);
+	deviceContext->VSSetConstantBuffers(0, 1, &MatrixBuffer);
 }
 
 void GameSystem::createShaders()
 {
+
 	HRESULT hr;
 
 	//create VertexShader
@@ -157,6 +165,7 @@ void GameSystem::createShaders()
 
 	hr = device->CreatePixelShader(pPS->GetBufferPointer(), pPS->GetBufferSize(), nullptr, &PixelShader);
 	pPS->Release();
+
 }
 
 void GameSystem::setShaders()
@@ -164,28 +173,30 @@ void GameSystem::setShaders()
 	deviceContext->VSSetShader(VertexShader, nullptr, 0);
 	deviceContext->PSSetShader(PixelShader, nullptr, 0);
 	deviceContext->IASetInputLayout(VertexLayout);
-
 }
 
 void GameSystem::Render()
 {
-
-	
 	gameTime.Update();
 	gameTime.ShowFPS();
 
-	float clearColor[] = { 0.0f, 0.0f, 0.0f, 0.0f };
-	deviceContext->ClearRenderTargetView(Backbuffer, clearColor);
+	//TEST
+	//float clearColor[] = { 0.0f, 0.0f, 0.0f, 0.0f };
+	//deviceContext->ClearRenderTargetView(Backbuffer, clearColor);
+	//deviceContext->OMSetRenderTargets(1, &Backbuffer, directX.getDepthView(deviceContext));
+	DeferedRendering.setGBufferShaders(deviceContext);
+	//setShaders();
+	//TEST
+	DeferedRendering.clearBuffer(deviceContext);
+	//TEST
 
-	deviceContext->OMSetRenderTargets(1, &Backbuffer, directX.getDepthView(deviceContext));
-
-	setShaders();
 
 	cam.Update();
 	//UPPDATING MATRIXBUFFER
 	//Check for input
 	cam.Input(gameTime.DeltaTime(), mainHwnd.getHWND());
 
+	//--------------UPDATING MATRIXES-----------------------------
 	XMFLOAT3 Pos = cam.getPos();
 	Pos.y = hMap.HMap(Pos.x, Pos.z) + 10.0f;
 	cam.setPos(Pos);
@@ -202,38 +213,38 @@ void GameSystem::Render()
 
 	temp = (Matrix*)MapDATA.pData;
 	temp->World = matrix.World;//change later depending on what object rendering? 
-	temp->Proj = matrix.Proj;
 	temp->View = matrix.View;
+	temp->Proj = matrix.Proj;
 
 	deviceContext->Unmap(MatrixBuffer, 0);
+	//--------------UPDATING MATRIXES-----------------------------
 
-	deviceContext->VSSetConstantBuffers(0, 1, &MatrixBuffer);
+	DeferedRendering.OMSetRender(device, deviceContext, directX.getDepthView(deviceContext));
+
+	//Shaders
+
+
+	//Felet ligger i att mina shaderresources inte skrivs till....
 
 	hMap.render(deviceContext);
 
-	//UINT duck;
-	//UINT offset = 0;
+	DeferedRendering.setShaderResources(deviceContext);
 
-	//duck = sizeof(XMFLOAT3);
+	DeferedRendering.setBackBufferShaders(deviceContext);
+	//Rendertarget
+	DeferedRendering.OMSetBackBuff(deviceContext);
 
-	//deviceContext->IASetVertexBuffers(0, 1, &ScreenBuffer, &duck, &offset);
-
-//	deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
-
-//	deviceContext->IASetInputLayout(VertexLayout);
-
-	//FINISHED UPPDATING MATRIXBUFFER
-	//deviceContext->Draw(4, 0);
+	//Finalising and drawing
+	DeferedRendering.Render(device, deviceContext);
 
 	swapChain->Present(0, 0);
 
+	DeferedRendering.CloseBuffers(deviceContext);
 }
 
 HWND GameSystem::getMainHwnd()
 {
 	return mainHwnd.getHWND();
 }
-
-//TESTING TEST
 
 

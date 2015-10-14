@@ -29,12 +29,10 @@ VS_OUT main(VS_IN input)
 	output.PosVS = mul(output.PosVS, View);
 	output.PosVS = mul(output.PosVS, Proj);
 
-	output.Nor = normalize(mul(float4(input.Nor, 1.0f), World));
+	output.Nor = normalize(mul(float4(input.Nor, 1.0f), World)).xyz;
 
-	output.PosWS = mul(input.Pos, World);
+	output.PosWS = mul(float4(input.Pos,1.0f), World).xyz;
 
 	output.Tex = input.Tex;
 	return output;
 }
-
-
