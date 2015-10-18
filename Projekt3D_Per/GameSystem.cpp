@@ -96,11 +96,11 @@ void GameSystem::StartGame(float gametime, float fps,HINSTANCE hinstance)
 
 	hMap.CreateMap(300,300,300,300,device,deviceContext);
 
-	obj.LoadObjFile(L"Tank.obj");
-	obj.createTexture(device, deviceContext, L"shit.jpg");
+	obj.LoadObjFile(L"teapot.obj");
+	obj.createTexture(device, deviceContext, L"teapot.png");
 	obj.createbuff(device);
 
-
+	Ssao.startUp(device, deviceContext);
 }
 
 void GameSystem::CreateBuffers()
@@ -228,18 +228,20 @@ void GameSystem::Render()
 
 	//Shaders
 
-
-	//Felet ligger i att mina shaderresources inte skrivs till....
-
 	hMap.render(deviceContext);
 	obj.render(deviceContext);
+
 	DeferedRendering.setShaderResources(deviceContext);
+	XMFLOAT4X4 oTemp;
+
+	XMStoreFloat4x4(&oTemp, XMMatrixMultiplyTranspose(cam.GetViewMa(), cam.GetProjMa()));
+	Ssao.renderPass(device, deviceContext, oTemp);
+	//Finalising and drawing
 
 	DeferedRendering.setBackBufferShaders(deviceContext);
 	//Rendertarget
 	DeferedRendering.OMSetBackBuff(deviceContext);
 
-	//Finalising and drawing
 	DeferedRendering.Render(device, deviceContext);
 
 	swapChain->Present(0, 0);
@@ -251,5 +253,3 @@ HWND GameSystem::getMainHwnd()
 {
 	return mainHwnd.getHWND();
 }
-
-

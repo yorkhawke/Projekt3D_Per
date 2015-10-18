@@ -195,7 +195,6 @@ void Defered::OMSetBackBuff(ID3D11DeviceContext *devCon)
 
 void Defered::setShaderResources(ID3D11DeviceContext *devCon)
 {
-
 	ID3D11RenderTargetView* temp[BufferC] = { NULL, NULL, NULL, NULL };
 	devCon->OMSetRenderTargets(BufferC, temp, nullptr);
 	devCon->PSSetShaderResources(0, 1, &ShaderResource[0]);//Normal
@@ -227,8 +226,11 @@ void Defered::Render(ID3D11Device* dev, ID3D11DeviceContext *devCon)
 
 void Defered::CloseBuffers(ID3D11DeviceContext* devCon)
 {
-	ID3D11ShaderResourceView* temp[BufferC] = { NULL };
-	devCon->PSSetShaderResources(0, BufferC, temp);
+	ID3D11RenderTargetView* otemp = { NULL };
+	devCon->OMSetRenderTargets(1, &otemp, nullptr);
+
+	ID3D11ShaderResourceView* temp[BufferC+1] = { NULL };
+	devCon->PSSetShaderResources(0, BufferC+1, temp);
 }
 
 

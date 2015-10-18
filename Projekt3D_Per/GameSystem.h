@@ -10,7 +10,7 @@
 #include "LandObject.h"
 #include "defered.h"
 #include "LoadObject.h"
-
+#include "Ssao.h"
 
 struct Matrix
 {
@@ -49,7 +49,7 @@ private:
 	LandObject hMap;
 	LoadObject obj;
 	Defered DeferedRendering;
-
+	SSao Ssao;
 
 public:
 	GameSystem();
