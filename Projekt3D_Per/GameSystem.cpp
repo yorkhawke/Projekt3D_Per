@@ -199,7 +199,7 @@ void GameSystem::setShaders()
 void GameSystem::Render()
 {
 	gameTime.Update();
-	gameTime.ShowFPS();
+	//gameTime.ShowFPS();
 
 	//TEST
 	//float clearColor[] = { 0.0f, 0.0f, 0.0f, 0.0f };
@@ -266,7 +266,7 @@ void GameSystem::Render()
 
 	XMFLOAT3 posT = cam.getPos();
 
-	std::cout <<"Curreny Position: "<< posT.x<< posT.y<< posT.z<< endl;
+	std::cout <<"Curreny Position: X:"<< posT.x<<" Y: " <<posT.y<<"Z: "<< posT.z<< endl;
 
 	DeferedRendering.CloseBuffers(deviceContext);
 }
@@ -276,7 +276,7 @@ void GameSystem::LightSun()
 	Sun.ambient = XMFLOAT4(0.5f, 0.5f, 0.5f, 0.5f);
 	Sun.Diffuse = XMFLOAT4(0.5f, 0.5f, 0.5f, 0.5f);
 	Sun.Specular = XMFLOAT4(0.2f, 0.2f, 0.2f, 0.2f);
-	Sun.SunPosition = XMFLOAT3(40, -100, 20);
+	Sun.SunPosition = XMFLOAT3(200, -400, 100);
 	Sun.mp = 0;
 }
 

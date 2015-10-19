@@ -1,5 +1,5 @@
 Texture2D Normal:register(t0);
-Texture2D DiffuseA:register(t1);
+Texture2D DiffuseA:register(t1);//Textures
 Texture2D SpecA:register(t2);
 Texture2D Position:register(t3);
 Texture2D Occlusion:register(t4);
@@ -16,7 +16,7 @@ cbuffer Sun : register (b0)//lägg till
 	
 };
 
-float4 main(in float4 screenPos : SV_Position) : SV_TARGET
+float4 main(in float4 screenPos : SV_Position) : SV_TARGET // Fixa shadow mapping någonsatan
 {
 	int3 sampleIndices = int3(screenPos.xy, 0);
 

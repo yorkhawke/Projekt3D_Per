@@ -13,6 +13,8 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 
 	AllocConsole();
 
+
+
 	HANDLE handle_out = GetStdHandle(STD_OUTPUT_HANDLE);
 	int hCrt = _open_osfhandle((long)handle_out, _O_TEXT);
 	FILE* hf_out = _fdopen(hCrt, "w");
@@ -24,8 +26,8 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 	FILE* hf_in = _fdopen(hCrt, "r");
 	setvbuf(hf_in, NULL, _IONBF, 128);
 	*stdin = *hf_in;
-
 	//game
+
 	game.StartGame(0.0f,0.0f,hInstance);
 	ShowWindow(game.getMainHwnd(), nCmdShow);
 	while (WM_QUIT != msg.message)
