@@ -6,25 +6,51 @@ Texture2D Occlusion:register(t4);
 
 SamplerState pointSampler;
 
+cbuffer Sun : register (b0)//lägg till
+{
+	float4 Ambient;
+	float4 Diffuse;
+	float4 Specular;
+	float3 SunPosition;
+	float mp;
+	
+};
+
 float4 main(in float4 screenPos : SV_Position) : SV_TARGET
 {
 	int3 sampleIndices = int3(screenPos.xy, 0);
 
-	float4 lightPos = float4(0, 0, 20, 0);
+	//float4 Spec = SpecA.Load(sampleIndices);
 	float4 Pos = Position.Load(sampleIndices);
-	float4 sun = float4(0, 100, 0, 0);
-	float4 ambient = float4(0.5, 0.5, 0.5, 0);
-	float4 Diff = DiffuseA.Load(sampleIndices);
-	float4 Spec = SpecA.Load(sampleIndices);
-	float4 finalCol = float4(0, 0, 0, 0);
-	float4 normal = Normal.Load(sampleIndices);
-	float Occ = Occlusion.Load(sampleIndices);
+	float4 materialAmbient = float4(0.2f, 0.2f, 0.2f, 0.0f);
+	float matSpec = 0.5;
+	float4 A = float4(0.0f, 0.0f, 0.0f, 0.0f);
+	float4 Text = DiffuseA.Load(sampleIndices);
 	
-	//return normal;
-	finalCol += ambient*Occ;
-	finalCol = finalCol *Diff;
+	float4 finalCol = float4(0.0f, 0.0f, 0.0f, 0.0f);
+	float4 normal = Normal.Load(sampleIndices);
+	float Occ = Occlusion.Load(sampleIndices); 
 
-	finalCol += saturate(finalCol);
+	float4 D = float4(0.0f, 0.0f, 0.0f, 0.0f);
+	float4 S = float4(0.0f, 0.0f, 0.0f, 0.0f);
+	float3 lightVector = normalize(-SunPosition);
+	A = materialAmbient*Ambient;
+
+	float3 toEye = normalize(screenPos.xyz - Pos.xyz);
+
+	float diffFac = dot(lightVector, normal);
+	[flatten]
+	if (diffFac > 0.0f)
+	{
+		float3 v = reflect(-lightVector, normal);
+		float specFactor = pow(max(dot(v, toEye),0.0f), matSpec);
+		
+		D = diffFac*matSpec*Diffuse;
+		S = specFactor*matSpec*Specular;
+	}
+
+	finalCol = Text*(A*Occ+D)+S;
+
 	return finalCol;
 
 }

@@ -143,6 +143,22 @@ void GameSystem::CreateBuffers()
 
 	device->CreateBuffer(&WorMatri, &DATA, &MatrixBuffer);
 	deviceContext->VSSetConstantBuffers(0, 1, &MatrixBuffer);
+
+	LightSun();
+
+	//Light buffer
+	D3D11_BUFFER_DESC SunData;
+	SunData.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	SunData.ByteWidth = sizeof(DirectionalLight);
+	SunData.MiscFlags = 0;
+	SunData.StructureByteStride = 0;
+	SunData.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+	SunData.Usage = D3D11_USAGE_DYNAMIC;
+
+	D3D11_SUBRESOURCE_DATA LightData;
+	LightData.pSysMem = &Sun;
+
+	device->CreateBuffer(&SunData, &LightData, &LightBuffer);
 }
 
 void GameSystem::createShaders()
@@ -242,11 +258,26 @@ void GameSystem::Render()
 	//Rendertarget
 	DeferedRendering.OMSetBackBuff(deviceContext);
 
+	deviceContext->PSSetConstantBuffers(0, 1, &LightBuffer);
+
 	DeferedRendering.Render(device, deviceContext);
 
 	swapChain->Present(0, 0);
 
+	XMFLOAT3 posT = cam.getPos();
+
+	std::cout <<"Curreny Position: "<< posT.x<< posT.y<< posT.z<< endl;
+
 	DeferedRendering.CloseBuffers(deviceContext);
+}
+
+void GameSystem::LightSun()
+{
+	Sun.ambient = XMFLOAT4(0.5f, 0.5f, 0.5f, 0.5f);
+	Sun.Diffuse = XMFLOAT4(0.5f, 0.5f, 0.5f, 0.5f);
+	Sun.Specular = XMFLOAT4(0.2f, 0.2f, 0.2f, 0.2f);
+	Sun.SunPosition = XMFLOAT3(40, -100, 20);
+	Sun.mp = 0;
 }
 
 HWND GameSystem::getMainHwnd()

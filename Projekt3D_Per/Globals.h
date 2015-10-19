@@ -30,4 +30,15 @@ const int ScreenWidth = 1040;
 //nameSpace
 using namespace DirectX;
 using namespace std;
+
+
+struct DirectionalLight
+{
+	XMFLOAT4 ambient;
+	XMFLOAT4 Diffuse;
+	XMFLOAT4 Specular;
+	XMFLOAT3 SunPosition;
+	float mp;
+};
+
 #endif

@@ -41,6 +41,7 @@ private:
 	ID3D11SamplerState* SampleState;
 	ID3D11Buffer* ScreenBuffer;
 	ID3D11Buffer* MatrixBuffer;
+	ID3D11Buffer* LightBuffer;
 	Matrix matrix;
 	//ShaderResources
 
@@ -51,6 +52,8 @@ private:
 	Defered DeferedRendering;
 	SSao Ssao;
 
+	DirectionalLight Sun;
+
 public:
 	GameSystem();
 	~GameSystem();
@@ -60,6 +63,7 @@ public:
 	void setShaders();
 	void StartGame(float gametime, float fps, HINSTANCE hinstance);
 	void Render();
+	void LightSun();
 	HWND getMainHwnd();
 };
 
