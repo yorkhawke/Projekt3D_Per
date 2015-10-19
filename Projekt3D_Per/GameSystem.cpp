@@ -96,7 +96,7 @@ void GameSystem::StartGame(float gametime, float fps,HINSTANCE hinstance)
 
 	hMap.CreateMap(300,300,300,300,device,deviceContext);
 
-	obj.LoadObjFile(L"teapot.obj");
+	obj.LoadObjFile(L"skull.obj");
 	obj.createTexture(device, deviceContext, L"teapot.png");
 	obj.createbuff(device);
 

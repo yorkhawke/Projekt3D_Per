@@ -26,6 +26,7 @@ static const float3 gRandomSphereVectors[] = { // Random vectors inside unit sph
 SamplerState pointSampler:register(s1);
 
 //lights later
+
 cbuffer proj
 {
 	float4x4 projview;
@@ -56,7 +57,7 @@ float main(in float4 screenPos : SV_Position) : SV_TARGET
 		float3 Occluder = Position.Sample(pointSampler, texC).xyz;
 		float z = distance(Pos.xyz, Occluder);
 
-		float distF = 1.0f - smoothstep(0.10f, 3.0f, z);
+		float distF = 1.0f - smoothstep(0.2f, 2.0f, z);
 		float3 directionOclud = normalize(Occluder - Pos);
 		occlusion += distF*max(dot(normal, directionOclud), 0);
 

@@ -11,8 +11,8 @@ float4 main(in float4 screenPos : SV_Position) : SV_TARGET
 	int3 sampleIndices = int3(screenPos.xy, 0);
 
 	float4 lightPos = float4(0, 0, 20, 0);
-	float4 Dir = float4(0, 1, 0, 0);
 	float4 Pos = Position.Load(sampleIndices);
+	float4 sun = float4(0, 100, 0, 0);
 	float4 ambient = float4(0.2, 0.2, 0.2, 0);
 	float4 Diff = DiffuseA.Load(sampleIndices);
 	float4 Spec = SpecA.Load(sampleIndices);
@@ -20,12 +20,12 @@ float4 main(in float4 screenPos : SV_Position) : SV_TARGET
 	float4 normal = Normal.Load(sampleIndices);
 	float Occ = Occlusion.Load(sampleIndices);
 	
+	//return normal;
 	finalCol += ambient*Occ;
 	finalCol = finalCol *Diff;
 
 	finalCol += saturate(finalCol);
-
-
 	return finalCol;
+
 }
 
