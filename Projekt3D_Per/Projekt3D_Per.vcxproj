@@ -88,7 +88,6 @@
     <ClCompile Include="MainLoop.cpp" />
     <ClCompile Include="Object.cpp" />
     <ClCompile Include="pch.cpp" />
-    <ClCompile Include="ShadowMap.cpp" />
     <ClCompile Include="Ssao.cpp" />
     <ClCompile Include="Time.cpp" />
     <ClCompile Include="WICTextureLoader.cpp" />
@@ -107,7 +106,6 @@
     <ClInclude Include="Object.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="PlatformHelpers.h" />
-    <ClInclude Include="ShadowMap.h" />
     <ClInclude Include="Ssao.h" />
     <ClInclude Include="Time.h" />
     <ClInclude Include="WICTextureLoader.h" />
@@ -139,14 +137,6 @@
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">5.0</ShaderModel>
-    </FxCompile>
-    <FxCompile Include="ShadowMapPixelShader.hlsl">
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
-    </FxCompile>
-    <FxCompile Include="ShadowMapVertexShader.hlsl">
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
     </FxCompile>
     <FxCompile Include="SsaoPixelShader.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>

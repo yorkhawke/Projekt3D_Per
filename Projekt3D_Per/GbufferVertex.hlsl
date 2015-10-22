@@ -19,6 +19,7 @@ struct VS_OUT
 	float3 Nor : NORMAL;
 	float2 Tex : TEXCOORD;
 	float3 PosWS : POSITION;
+
 };
 
 VS_OUT main(VS_IN input)
