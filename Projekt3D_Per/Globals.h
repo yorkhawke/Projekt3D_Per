@@ -41,4 +41,11 @@ struct DirectionalLight
 	float mp;
 };
 
+struct Matrix
+{
+	XMFLOAT4X4 World;
+	XMFLOAT4X4 View;
+	XMFLOAT4X4 Proj;
+};
+
 #endif

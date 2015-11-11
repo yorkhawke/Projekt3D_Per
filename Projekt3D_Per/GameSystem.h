@@ -11,13 +11,7 @@
 #include "defered.h"
 #include "LoadObject.h"
 #include "Ssao.h"
-
-struct Matrix
-{
-	XMFLOAT4X4 World;
-	XMFLOAT4X4 View;
-	XMFLOAT4X4 Proj;
-};
+#include "ShadowMap.h"
 
 class GameSystem
 {
@@ -53,6 +47,7 @@ private:
 	SSao Ssao;
 
 	DirectionalLight Sun;
+	ShadowMap shadow;
 
 public:
 	GameSystem();

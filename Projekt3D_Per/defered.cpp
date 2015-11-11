@@ -229,8 +229,8 @@ void Defered::CloseBuffers(ID3D11DeviceContext* devCon)
 	ID3D11RenderTargetView* otemp = { NULL };
 	devCon->OMSetRenderTargets(1, &otemp, nullptr);
 
-	ID3D11ShaderResourceView* temp[BufferC+1] = { NULL };
-	devCon->PSSetShaderResources(0, BufferC+1, temp);
+	ID3D11ShaderResourceView* temp[BufferC+2] = { NULL };
+	devCon->PSSetShaderResources(0, BufferC+2, temp);
 }
 
 

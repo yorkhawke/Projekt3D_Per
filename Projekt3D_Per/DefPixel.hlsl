@@ -3,6 +3,7 @@ Texture2D DiffuseA:register(t1);//Textures
 Texture2D SpecA:register(t2);
 Texture2D Position:register(t3);
 Texture2D Occlusion:register(t4);
+Texture2D ShadowMap:register(t5);
 
 SamplerState pointSampler;
 
@@ -30,12 +31,13 @@ float4 main(in float4 screenPos : SV_Position) : SV_TARGET // Fixa shadow mappin
 	float4 finalCol = float4(0.0f, 0.0f, 0.0f, 0.0f);
 	float4 normal = Normal.Load(sampleIndices);
 	float Occ = Occlusion.Load(sampleIndices); 
-
+	//float shadow = ShadowMap.Load(sampleIndices);
+	
 	float4 D = float4(0.0f, 0.0f, 0.0f, 0.0f);
 	float4 S = float4(0.0f, 0.0f, 0.0f, 0.0f);
 	float3 lightVector = normalize(SunPosition);
 	A = materialAmbient*Ambient;
-
+	
 	float3 toEye = normalize(screenPos.xyz - Pos.xyz);
 
 	float diffFac = dot(lightVector, normal);
@@ -49,9 +51,8 @@ float4 main(in float4 screenPos : SV_Position) : SV_TARGET // Fixa shadow mappin
 		S = specFactor*matSpec*Specular;
 	}
 
-	finalCol = Text*(A*Occ+D)+S;
+	finalCol = Text*(A*Occ + (/*shadow**/D));// +S*shadow;
 
 	return finalCol;
-
 }
 

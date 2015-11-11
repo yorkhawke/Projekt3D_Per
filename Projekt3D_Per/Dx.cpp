@@ -14,9 +14,7 @@ void Dx::init(ID3D11Device* device, ID3D11DeviceContext* deviceContext)
 {
 	HRESULT hr;
 	D3D11_TEXTURE2D_DESC depthBufferDesc;
-	D3D11_DEPTH_STENCIL_DESC depthStencilDesc;
 	D3D11_SHADER_RESOURCE_VIEW_DESC shaderResDesc;
-	D3D11_DEPTH_STENCIL_VIEW_DESC depthStencilViewDesc;
 	D3D11_RASTERIZER_DESC rasterDesc;
 	D3D11_VIEWPORT ViewPort;
 
@@ -75,7 +73,6 @@ void Dx::init(ID3D11Device* device, ID3D11DeviceContext* deviceContext)
 		ViewPort.MaxDepth = 1.0f;
 		ViewPort.TopLeftX = 0.0f;
 		ViewPort.TopLeftY = 0.0f;
-
 		deviceContext->RSSetViewports(1, &ViewPort);
 
 	}

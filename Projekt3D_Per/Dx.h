@@ -25,8 +25,7 @@ private:
 	ID3D11DepthStencilView* depthStencilView;
 	ID3D11RasterizerState* rasterState;
 
-
 	ID3D11ShaderResourceView* ShaderDepth;
-	ID3D11ShaderResourceView* ShaderRandTex;
+
 };
 #endif

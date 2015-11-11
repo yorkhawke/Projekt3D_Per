@@ -101,6 +101,17 @@ void GameSystem::StartGame(float gametime, float fps,HINSTANCE hinstance)
 	obj.createbuff(device);
 
 	Ssao.startUp(device, deviceContext);
+
+	XMFLOAT4X4 temp;
+
+	XMVECTOR sunPos, lightPointTo, up;
+	sunPos = XMLoadFloat3(&Sun.SunPosition);
+	lightPointTo = -XMLoadFloat3(&Sun.SunPosition);
+	up = XMLoadFloat3(&XMFLOAT3(0, 0, 1));
+	XMStoreFloat4x4(&temp, XMMatrixLookAtLH(sunPos, lightPointTo, up));//View projektion from sunlight
+
+
+	shadow.StartUp(device,Sun.SunPosition,temp);
 }
 
 void GameSystem::CreateBuffers()
@@ -233,8 +244,8 @@ void GameSystem::Render()
 	deviceContext->Map(MatrixBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &MapDATA);
 
 	temp = (Matrix*)MapDATA.pData;
-	temp->World = matrix.World;//change later depending on what object rendering? 
-	temp->View = matrix.View;
+	temp->World = matrix.World;
+	temp->View = matrix.View;//change later depending on what object rendering? 
 	temp->Proj = matrix.Proj;
 
 	deviceContext->Unmap(MatrixBuffer, 0);
@@ -251,7 +262,12 @@ void GameSystem::Render()
 	XMFLOAT4X4 oTemp;
 
 	XMStoreFloat4x4(&oTemp, XMMatrixMultiplyTranspose(cam.GetViewMa(), cam.GetProjMa()));
+	
+	//SSAO
 	Ssao.renderPass(device, deviceContext, oTemp);
+	//Shadow
+	shadow.Render(deviceContext);
+	
 	//Finalising and drawing
 
 	DeferedRendering.setBackBufferShaders(deviceContext);
