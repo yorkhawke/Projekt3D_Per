@@ -64,9 +64,37 @@ void ShadowMap::StartUp(ID3D11Device* device, XMFLOAT3 Sun,XMFLOAT4X4 lightView)
 
 	hr = device->CreateInputLayout(inputDesc, ARRAYSIZE(inputDesc), pSSVS->GetBufferPointer(), pSSVS->GetBufferSize(), &Layout);
 
+	//D3D11_BUFFER_DESC bd;
+	//bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+	//bd.ByteWidth = sizeof(XMFLOAT3);
+	//bd.CPUAccessFlags = 0;
+	//bd.Usage = D3D11_USAGE_DEFAULT;
+	//bd.StructureByteStride = NULL;
+	//bd.MiscFlags = NULL;
+
+	//D3D11_SUBRESOURCE_DATA d;
+	//ZeroMemory(&d, sizeof(d));
+	//d.pSysMem = &Sun;
+
+	//device->CreateBuffer(&bd, &d, &lightBuffer);
+	XMFLOAT3 p[4];
+
+	p[0].x = -1.0f;
+	p[0].z = 0.0f;
+	p[0].y = -1.0f;
+	p[1].x = -1.0f;
+	p[1].z = 0.0f;
+	p[1].y = 1.0f;
+	p[2].x = 1.0f;
+	p[2].z = 0.0f;
+	p[2].y = -1.0f;
+	p[3].x = 1.0f;
+	p[3].z = 0.0f;
+	p[3].y = 1.0f;
+
 	D3D11_BUFFER_DESC bd;
 	bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-	bd.ByteWidth = sizeof(XMFLOAT3);
+	bd.ByteWidth = sizeof(XMFLOAT3) * 4;
 	bd.CPUAccessFlags = 0;
 	bd.Usage = D3D11_USAGE_DEFAULT;
 	bd.StructureByteStride = NULL;
@@ -74,14 +102,13 @@ void ShadowMap::StartUp(ID3D11Device* device, XMFLOAT3 Sun,XMFLOAT4X4 lightView)
 
 	D3D11_SUBRESOURCE_DATA d;
 	ZeroMemory(&d, sizeof(d));
-	d.pSysMem = &Sun;
-
+	d.pSysMem = p;
 	device->CreateBuffer(&bd, &d, &lightBuffer);
 
 	//WorldViewProj Matrixes
 	D3D11_BUFFER_DESC WorMatri;
 	WorMatri.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-	WorMatri.ByteWidth = sizeof(XMFLOAT4X4);
+	WorMatri.ByteWidth = sizeof(Matrix);
 	WorMatri.MiscFlags = 0;
 	WorMatri.StructureByteStride = 0;
 	WorMatri.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
@@ -89,12 +116,15 @@ void ShadowMap::StartUp(ID3D11Device* device, XMFLOAT3 Sun,XMFLOAT4X4 lightView)
 
 	D3D11_SUBRESOURCE_DATA DATA;
 
+	shadowMatrix.View = lightView;
+	XMStoreFloat4x4(&shadowMatrix.World, XMMatrixTranspose(XMMatrixScaling(1.0, 1.0, 1.0)));
+	XMStoreFloat4x4(&shadowMatrix.Proj, XMMatrixTranspose(XMMatrixPerspectiveFovLH(XM_PI / 3, 1040.0f / 800.0f, 0.5, 20000.0f)));
 	ZeroMemory(&DATA, sizeof(DATA));
 	DATA.pSysMem = &shadowMatrix;
 
 	device->CreateBuffer(&WorMatri, &DATA, &MatrixBuffer);
 
-	//render    deviceContext->VSSetConstantBuffers(0, 1, &MatrixBuffer);
+	
 }
 
 void ShadowMap::Render(ID3D11DeviceContext* devCon)
@@ -115,11 +145,12 @@ void ShadowMap::Render(ID3D11DeviceContext* devCon)
 	devCon->IASetVertexBuffers(0, 1, &lightBuffer, &duck, &offset);
 	devCon->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
 
+	devCon->VSSetConstantBuffers(0, 1, &MatrixBuffer);
 	//Drawcall
-	devCon->Draw(1, 0);
-	//FEL JÄKLA MATRIXER IN MÅSTE SKICKA IN WORLD, View för Ljuset samt PROJ FÖR LJUSET...
+	devCon->Draw(4, 0);
+
 	ID3D11RenderTargetView* temp = { NULL };
 	devCon->OMSetRenderTargets(1, &temp, nullptr);
-
 	devCon->PSSetShaderResources(5, 1, &ShaderDepth);
 }
+

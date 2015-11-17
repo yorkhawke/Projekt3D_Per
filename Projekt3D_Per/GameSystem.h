@@ -45,7 +45,7 @@ private:
 	LoadObject obj;
 	Defered DeferedRendering;
 	SSao Ssao;
-
+	XMFLOAT4X4 sunView;
 	DirectionalLight Sun;
 	ShadowMap shadow;
 

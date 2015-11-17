@@ -2,11 +2,6 @@
 #define SHADWO_MAP
 #include "Globals.h"
 
-struct ShadowMatrix
-{
-	XMFLOAT4X4 View;
-};
-
 class ShadowMap
 {
 public:
@@ -17,7 +12,7 @@ public:
 	void Render(ID3D11DeviceContext* devCon );
 
 private:
-	ShadowMatrix shadowMatrix;
+	Matrix shadowMatrix;
 
 	ID3D11VertexShader* shadowMapVertexShader;
 	ID3D11Buffer* lightBuffer;

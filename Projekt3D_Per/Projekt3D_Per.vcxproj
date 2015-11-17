@@ -91,6 +91,7 @@
     <ClCompile Include="ShadowMap.cpp" />
     <ClCompile Include="Ssao.cpp" />
     <ClCompile Include="Time.cpp" />
+    <ClCompile Include="ViewFrustumCulling.cpp" />
     <ClCompile Include="WICTextureLoader.cpp" />
     <ClCompile Include="Window.cpp" />
     <ClCompile Include="WindowsMain.cpp" />
@@ -110,6 +111,7 @@
     <ClInclude Include="ShadowMap.h" />
     <ClInclude Include="Ssao.h" />
     <ClInclude Include="Time.h" />
+    <ClInclude Include="ViewFrustumCulling.hh" />
     <ClInclude Include="WICTextureLoader.h" />
     <ClInclude Include="Window.h" />
     <ClInclude Include="WindowsMain.h" />

@@ -5,7 +5,7 @@ Camera::Camera()
 {
 
 	Up = XMLoadFloat3(&XMFLOAT3(0, 1, 0));
-	Position = XMLoadFloat3(&XMFLOAT3(0, 50, 0));
+	Position = XMLoadFloat3(&XMFLOAT3(0,0,-20));
 	CamDir = XMLoadFloat3(&XMFLOAT3(0, 0, 1));
 	XMStoreFloat4x4(&Proj, XMMatrixPerspectiveFovLH(XM_PI / 4, 800.0f / 600.0f, 0.5, 20000.0f));
 	Right = XMVector3Cross(Up, CamDir);
