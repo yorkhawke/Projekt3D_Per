@@ -106,10 +106,12 @@ void GameSystem::StartGame(float gametime, float fps,HINSTANCE hinstance)
 	sunPos = XMLoadFloat3(&Sun.SunPosition);
 	up = XMLoadFloat3(&XMFLOAT3(0, 0, 1));
 	lightPointTo = XMVector3Normalize(sunPos);
-	XMStoreFloat4x4(&sunView,XMMatrixTranspose(XMMatrixLookAtLH(sunPos, lightPointTo, -up)));
 
+	XMStoreFloat4x4(&sunMatrix.View,XMMatrixTranspose(XMMatrixLookAtLH(sunPos, lightPointTo, -up)));
+	XMStoreFloat4x4(&sunMatrix.World, XMMatrixTranspose(XMMatrixScaling(1.0, 1.0, 1.0)));
+	XMStoreFloat4x4(&sunMatrix.Proj, XMMatrixTranspose(XMMatrixPerspectiveFovLH(XM_PI / 3, 1040.0f / 800.0f, 0.5, 20000.0f)));
 	//View projektion from sunlight
-	shadow.StartUp(device,Sun.SunPosition,sunView);
+	shadow.StartUp(device,deviceContext,Sun.SunPosition,sunMatrix);
 }
 
 void GameSystem::CreateBuffers()
@@ -210,16 +212,8 @@ void GameSystem::Render()
 	gameTime.Update();
 	//gameTime.ShowFPS();
 
-	//TEST
-	//float clearColor[] = { 0.0f, 0.0f, 0.0f, 0.0f };
-	//deviceContext->ClearRenderTargetView(Backbuffer, clearColor);
-	//deviceContext->OMSetRenderTargets(1, &Backbuffer, directX.getDepthView(deviceContext));
 	DeferedRendering.setGBufferShaders(deviceContext);
-	//setShaders();
-	//TEST
 	DeferedRendering.clearBuffer(deviceContext);
-	//TEST
-
 
 	cam.Update();
 	//UPPDATING MATRIXBUFFER
@@ -253,22 +247,28 @@ void GameSystem::Render()
 
 	DeferedRendering.OMSetRender(device, deviceContext, directX.getDepthView(deviceContext));
 
-	//Shaders
+	//draw obj
 
 	hMap.render(deviceContext);
 	obj.render(deviceContext);
-
 	DeferedRendering.setShaderResources(deviceContext);
+
+	//Shadow
+	shadow.prepRun(deviceContext);
+
+	hMap.render(deviceContext);
+	obj.render(deviceContext);// fel då jag sätter texture igen :/
+	shadow.close(deviceContext);
+
+
+	deviceContext->VSSetConstantBuffers(0, 1, &MatrixBuffer);
+
+	//SSAO
 	XMFLOAT4X4 oTemp;
 
 	XMStoreFloat4x4(&oTemp, XMMatrixMultiplyTranspose(cam.GetViewMa(), cam.GetProjMa()));
 	
-	//SSAO
 	Ssao.renderPass(device, deviceContext, oTemp);
-	//Shadow
-	shadow.Render(deviceContext);
-
-	deviceContext->VSSetConstantBuffers(0, 1, &MatrixBuffer);
 
 	//Finalising and drawing
 	DeferedRendering.setBackBufferShaders(deviceContext);

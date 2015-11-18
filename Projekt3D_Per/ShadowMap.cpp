@@ -10,7 +10,7 @@ ShadowMap::~ShadowMap()
 
 }
 
-void ShadowMap::StartUp(ID3D11Device* device, XMFLOAT3 Sun,XMFLOAT4X4 lightView)
+void ShadowMap::StartUp(ID3D11Device* device, ID3D11DeviceContext* devCon,XMFLOAT3 Sun,Matrix light)
 {
 	D3D11_TEXTURE2D_DESC depthBufferDesc;
 	D3D11_DEPTH_STENCIL_DESC depthStencilDesc;
@@ -62,48 +62,6 @@ void ShadowMap::StartUp(ID3D11Device* device, XMFLOAT3 Sun,XMFLOAT4X4 lightView)
 
 	hr = device->CreateVertexShader(pSSVS->GetBufferPointer(), pSSVS->GetBufferSize(), nullptr, &shadowMapVertexShader);
 
-	hr = device->CreateInputLayout(inputDesc, ARRAYSIZE(inputDesc), pSSVS->GetBufferPointer(), pSSVS->GetBufferSize(), &Layout);
-
-	//D3D11_BUFFER_DESC bd;
-	//bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-	//bd.ByteWidth = sizeof(XMFLOAT3);
-	//bd.CPUAccessFlags = 0;
-	//bd.Usage = D3D11_USAGE_DEFAULT;
-	//bd.StructureByteStride = NULL;
-	//bd.MiscFlags = NULL;
-
-	//D3D11_SUBRESOURCE_DATA d;
-	//ZeroMemory(&d, sizeof(d));
-	//d.pSysMem = &Sun;
-
-	//device->CreateBuffer(&bd, &d, &lightBuffer);
-	XMFLOAT3 p[4];
-
-	p[0].x = -1.0f;
-	p[0].z = 0.0f;
-	p[0].y = -1.0f;
-	p[1].x = -1.0f;
-	p[1].z = 0.0f;
-	p[1].y = 1.0f;
-	p[2].x = 1.0f;
-	p[2].z = 0.0f;
-	p[2].y = -1.0f;
-	p[3].x = 1.0f;
-	p[3].z = 0.0f;
-	p[3].y = 1.0f;
-
-	D3D11_BUFFER_DESC bd;
-	bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-	bd.ByteWidth = sizeof(XMFLOAT3) * 4;
-	bd.CPUAccessFlags = 0;
-	bd.Usage = D3D11_USAGE_DEFAULT;
-	bd.StructureByteStride = NULL;
-	bd.MiscFlags = NULL;
-
-	D3D11_SUBRESOURCE_DATA d;
-	ZeroMemory(&d, sizeof(d));
-	d.pSysMem = p;
-	device->CreateBuffer(&bd, &d, &lightBuffer);
 
 	//WorldViewProj Matrixes
 	D3D11_BUFFER_DESC WorMatri;
@@ -115,42 +73,33 @@ void ShadowMap::StartUp(ID3D11Device* device, XMFLOAT3 Sun,XMFLOAT4X4 lightView)
 	WorMatri.Usage = D3D11_USAGE_DYNAMIC;
 
 	D3D11_SUBRESOURCE_DATA DATA;
-
-	shadowMatrix.View = lightView;
-	XMStoreFloat4x4(&shadowMatrix.World, XMMatrixTranspose(XMMatrixScaling(1.0, 1.0, 1.0)));
-	XMStoreFloat4x4(&shadowMatrix.Proj, XMMatrixTranspose(XMMatrixPerspectiveFovLH(XM_PI / 3, 1040.0f / 800.0f, 0.5, 20000.0f)));
+	//matrixbuffer
 	ZeroMemory(&DATA, sizeof(DATA));
-	DATA.pSysMem = &shadowMatrix;
+	DATA.pSysMem = &light;
 
 	device->CreateBuffer(&WorMatri, &DATA, &MatrixBuffer);
-
-	
+	devCon->VSSetConstantBuffers(1, 1, &MatrixBuffer);
 }
 
-void ShadowMap::Render(ID3D11DeviceContext* devCon)
+void ShadowMap::prepRun(ID3D11DeviceContext* devCon)
 {
 	devCon->VSSetShader(shadowMapVertexShader, nullptr,0);
 	devCon->PSSetShader(nullptr, nullptr, 0);
-	devCon->IASetInputLayout(Layout);
 
 	devCon->ClearDepthStencilView(depthStencilView, 0, 0, 0);
-	devCon->OMSetRenderTargets(0, NULL,depthStencilView);
+	ID3D11RenderTargetView* temp = { NULL };
+	devCon->OMSetRenderTargets(1, &temp,depthStencilView);
 
-	//RENDERTARGET SET 
-	UINT duck;
-	UINT offset = 0;
+	//ska inte draw shiten.... det är inte en quad som ska ritas utan alla objkten som ska ha skugga som ska ritas.....
+	//sedan skickas vidare till pixelshadern. Ljusmatrixen då asså och kolla ifall avståndet mellan shadowmappen och den pixeln ifall vilken som är störst....
 
-	duck = sizeof(XMFLOAT3);
+}
 
-	devCon->IASetVertexBuffers(0, 1, &lightBuffer, &duck, &offset);
-	devCon->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
-
-	devCon->VSSetConstantBuffers(0, 1, &MatrixBuffer);
-	//Drawcall
-	devCon->Draw(4, 0);
-
+void ShadowMap::close(ID3D11DeviceContext* devCon)
+{
 	ID3D11RenderTargetView* temp = { NULL };
 	devCon->OMSetRenderTargets(1, &temp, nullptr);
 	devCon->PSSetShaderResources(5, 1, &ShaderDepth);
 }
+
 

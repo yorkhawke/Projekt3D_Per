@@ -14,7 +14,6 @@ cbuffer Sun : register (b0)//lägg till
 	float4 Specular;
 	float3 SunPosition;
 	float mp;
-	
 };
 
 float4 main(in float4 screenPos : SV_Position) : SV_TARGET // Fixa shadow mapping någonsatan
@@ -31,9 +30,10 @@ float4 main(in float4 screenPos : SV_Position) : SV_TARGET // Fixa shadow mappin
 	float4 finalCol = float4(0.0f, 0.0f, 0.0f, 0.0f);
 	float4 normal = Normal.Load(sampleIndices);
 	float Occ = Occlusion.Load(sampleIndices); 
-	float shadow = ShadowMap.Load(sampleIndices);
-
-	//return float4(shadow, shadow, shadow, 1.0f);//hur fan funkar det med depthStencil view? vad får man tebax???:
+	float4 shadow = ShadowMap.Load(screenPos);
+	//float4 shadow = ShadowMap.Sample(pointSampler,screenPos.xy);
+	return normal;
+	//return float4(shadow.x, shadow.z, shadow.w, 1.0f);
 
 	float4 D = float4(0.0f, 0.0f, 0.0f, 0.0f);
 	float4 S = float4(0.0f, 0.0f, 0.0f, 0.0f);

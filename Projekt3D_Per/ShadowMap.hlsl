@@ -1,4 +1,4 @@
-cbuffer Matrixes : register(b0)
+cbuffer Matrixes : register(b1)
 {
 	float4x4 World;
 	float4x4 View;
@@ -8,6 +8,8 @@ cbuffer Matrixes : register(b0)
 struct VS_IN
 {
 	float3 Pos : POSITION;
+	float3 Nor : NORMAL;
+	float2 Tex : TEXCOORD;
 };
 
 float4 main(VS_IN input) :SV_POSITION
