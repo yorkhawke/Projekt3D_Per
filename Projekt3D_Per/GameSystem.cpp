@@ -168,9 +168,9 @@ void GameSystem::CreateBuffers()
 	up = XMLoadFloat3(&XMFLOAT3(0, 0, 1));
 	lightPointTo = XMVector3Normalize(sunPos);
 
-	XMStoreFloat4x4(&sunMatrix.View, XMMatrixTranspose(XMMatrixLookAtLH(sunPos, lightPointTo, -up)));
+	XMStoreFloat4x4(&sunMatrix.View, XMMatrixTranspose(XMMatrixLookAtLH(sunPos, -lightPointTo, -up)));
 	XMStoreFloat4x4(&sunMatrix.World, XMMatrixTranspose(XMMatrixScaling(1.0, 1.0, 1.0)));
-	XMStoreFloat4x4(&sunMatrix.Proj, XMMatrixTranspose(XMMatrixPerspectiveFovLH(XM_PI / 3, 1040.0f / 800.0f, 0.5, 20000.0f)));
+	XMStoreFloat4x4(&sunMatrix.Proj, XMMatrixOrthographicLH(400, 400, 0.5, 800/*XMMatrixPerspectiveFovLH(XM_PI / 3, 1040.0f / 800.0f, 10.0f, 300.0f)*/));
 	
 	//matrixbuffer
 	ZeroMemory(&DATA, sizeof(DATA));
@@ -289,7 +289,6 @@ void GameSystem::Render()
 	DeferedRendering.Render(device, deviceContext);
 
 	//kolla shadowmappen
-	shadow.testis(deviceContext);
 	swapChain->Present(0, 0);
 
 	XMFLOAT3 posT = cam.getPos();

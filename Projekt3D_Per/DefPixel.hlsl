@@ -33,7 +33,7 @@ float4 main(in float4 screenPos : SV_Position) : SV_TARGET // Fixa shadow mappin
 	//float4 shadow = ShadowMap.Load(screenPos);
 	float4 shadow = ShadowMap.Sample(pointSampler,screenPos.xy);
 
-	//return float4(shadow.x, shadow.z, shadow.w, 1.0f);
+	return float4(shadow.x, shadow.y, shadow.x, 1.0f);
 	float4 D = float4(0.0f, 0.0f, 0.0f, 0.0f);
 	float4 S = float4(0.0f, 0.0f, 0.0f, 0.0f);
 	float3 lightVector = normalize(SunPosition);

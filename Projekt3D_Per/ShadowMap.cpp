@@ -21,7 +21,7 @@ void ShadowMap::StartUp(ID3D11Device* device, ID3D11DeviceContext* devCon,Matrix
 	depthBufferDesc.Height = ScreenHeight;
 	depthBufferDesc.MipLevels = 1;
 	depthBufferDesc.ArraySize = 1;
-	depthBufferDesc.Format = DXGI_FORMAT_R24G8_TYPELESS;
+	depthBufferDesc.Format = DXGI_FORMAT_R32_TYPELESS;
 	depthBufferDesc.SampleDesc.Count = 1;
 	depthBufferDesc.SampleDesc.Quality = 0;
 	depthBufferDesc.Usage = D3D11_USAGE_DEFAULT;
@@ -34,26 +34,20 @@ void ShadowMap::StartUp(ID3D11Device* device, ID3D11DeviceContext* devCon,Matrix
 
 	D3D11_DEPTH_STENCIL_VIEW_DESC dpVdesc;
 
-	dpVdesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
+	dpVdesc.Format = DXGI_FORMAT_D32_FLOAT;
 	dpVdesc.Flags = 0;
 	dpVdesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
 	dpVdesc.Texture2D.MipSlice = 0;
 
 	device->CreateDepthStencilView(depthStencilBuffer, &dpVdesc, &depthStencilView);
 
-	shaderResDesc.Format = DXGI_FORMAT_R24_UNORM_X8_TYPELESS;
+	shaderResDesc.Format = DXGI_FORMAT_R32_FLOAT;
 	shaderResDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
 	shaderResDesc.Texture2D.MostDetailedMip = 0;
 	shaderResDesc.Texture2D.MipLevels = 1;
 
 	device->CreateShaderResourceView(depthStencilBuffer, &shaderResDesc, &ShaderDepth);
 
-	D3D11_RENDER_TARGET_VIEW_DESC testDesc;
-	testDesc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
-	testDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
-	testDesc.Texture2D.MipSlice = 0;
-
-	device->CreateRenderTargetView(depthStencilBuffer, &testDesc, &test);
 	//Shader
 
 	HRESULT hr;
@@ -89,9 +83,5 @@ void ShadowMap::close(ID3D11DeviceContext* devCon)
 	devCon->PSSetShaderResources(5, 1, &ShaderDepth);
 }
 
-void ShadowMap::testis(ID3D11DeviceContext* devCon)
-{
-	devCon->OMSetRenderTargets(1, &test, nullptr);
-}
 
 

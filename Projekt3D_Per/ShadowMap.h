@@ -11,7 +11,6 @@ public:
 	void StartUp(ID3D11Device* device, ID3D11DeviceContext* devCon, Matrix light);
 	void prepRun(ID3D11DeviceContext* devCon );
 	void close(ID3D11DeviceContext* devCon);
-	void testis(ID3D11DeviceContext* devCon);
 
 private:
 	ID3D11VertexShader* shadowMapVertexShader;
@@ -19,7 +18,6 @@ private:
 	ID3D11Texture2D* depthStencilBuffer;
 	ID3D11DepthStencilState* depthStencilState;
 	ID3D11DepthStencilView* depthStencilView;
-	ID3D11RenderTargetView* test;
 };
 
 
