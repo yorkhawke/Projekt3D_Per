@@ -1,4 +1,4 @@
-cbuffer Matrixes : register(b1)
+cbuffer Matrixes : register(b0)
 {
 	float4x4 World;
 	float4x4 View;

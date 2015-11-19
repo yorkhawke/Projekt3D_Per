@@ -22,6 +22,7 @@ public:
 	void Render(ID3D11Device* dev, ID3D11DeviceContext *devCon);
 	void CloseBuffers(ID3D11DeviceContext* devCon);
 	void test(ID3D11DeviceContext* devCon);
+	void nullRender(ID3D11DeviceContext* devCon);
 
 private:
 	ID3D11VertexShader* GVertexShader;

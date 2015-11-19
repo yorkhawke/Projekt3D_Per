@@ -174,6 +174,12 @@ void Defered::createShaders(ID3D11Device* dev, ID3D11DeviceContext *devCon)
 
 }
 
+void Defered::nullRender(ID3D11DeviceContext* devCon)
+{
+	ID3D11RenderTargetView* temp[BufferC] = { NULL, NULL, NULL, NULL };
+	devCon->OMSetRenderTargets(BufferC, temp, nullptr);
+}
+
 void Defered::setGBufferShaders(ID3D11DeviceContext* devCon)
 {
 	devCon->VSSetShader(GVertexShader, nullptr, 0);
@@ -195,8 +201,7 @@ void Defered::OMSetBackBuff(ID3D11DeviceContext *devCon)
 
 void Defered::setShaderResources(ID3D11DeviceContext *devCon)
 {
-	ID3D11RenderTargetView* temp[BufferC] = { NULL, NULL, NULL, NULL };
-	devCon->OMSetRenderTargets(BufferC, temp, nullptr);
+
 	devCon->PSSetShaderResources(0, 1, &ShaderResource[0]);//Normal
 	devCon->PSSetShaderResources(1, 1, &ShaderResource[1]);//diffuseA
 	devCon->PSSetShaderResources(2, 1, &ShaderResource[2]);//SpecA

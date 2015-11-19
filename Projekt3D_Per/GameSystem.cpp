@@ -167,10 +167,11 @@ void GameSystem::CreateBuffers()
 	sunPos = XMLoadFloat3(&Sun.SunPosition);
 	up = XMLoadFloat3(&XMFLOAT3(0, 0, 1));
 	lightPointTo = XMVector3Normalize(sunPos);
-
-	XMStoreFloat4x4(&sunMatrix.View, XMMatrixTranspose(XMMatrixLookAtLH(sunPos, -lightPointTo, -up)));
-	XMStoreFloat4x4(&sunMatrix.World, XMMatrixTranspose(XMMatrixScaling(1.0, 1.0, 1.0)));
-	XMStoreFloat4x4(&sunMatrix.Proj, XMMatrixOrthographicLH(400, 400, 0.5, 800/*XMMatrixPerspectiveFovLH(XM_PI / 3, 1040.0f / 800.0f, 10.0f, 300.0f)*/));
+	XMFLOAT4X4 const worldfloatTemp = matrix.World;
+	XMMATRIX worldTemp = XMLoadFloat4x4(&worldfloatTemp);
+	XMStoreFloat4x4(&sunMatrix.View, XMMatrixTranspose(XMMatrixLookAtLH(sunPos, -lightPointTo, up)));
+	XMStoreFloat4x4(&sunMatrix.World, worldTemp);
+	XMStoreFloat4x4(&sunMatrix.Proj,XMMatrixTranspose(XMMatrixOrthographicLH(800, 1040, 1, 100)));
 	
 	//matrixbuffer
 	ZeroMemory(&DATA, sizeof(DATA));
@@ -247,7 +248,7 @@ void GameSystem::Render()
 
 	temp = (Matrix*)MapDATA.pData;
 	temp->World = matrix.World;
-	temp->View =  matrix.View;//change later depending on what object rendering? 
+	temp->View =  matrix.View;
 	temp->Proj = matrix.Proj;
 
 	deviceContext->Unmap(MatrixBuffer, 0);
@@ -260,16 +261,17 @@ void GameSystem::Render()
 	hMap.render(deviceContext);
 	obj.render(deviceContext);
 
-
+	DeferedRendering.nullRender(deviceContext);
 	//Shadow
 	deviceContext->VSSetConstantBuffers(0, 1, &SunBuffer);
 	shadow.prepRun(deviceContext);
+
 	hMap.render(deviceContext);
 	obj.render(deviceContext);
-	shadow.close(deviceContext);
-	//deviceContext->VSSetConstantBuffers(0, 1, &MatrixBuffer);
-	DeferedRendering.setShaderResources(deviceContext);
 
+	shadow.close(deviceContext);
+	DeferedRendering.setShaderResources(deviceContext);
+	deviceContext->VSSetConstantBuffers(0, 1, &MatrixBuffer);
 
 	//SSAO
 	XMFLOAT4X4 oTemp;
@@ -303,7 +305,7 @@ void GameSystem::LightSun()
 	Sun.ambient = XMFLOAT4(0.5f, 0.5f, 0.5f, 0.5f);
 	Sun.Diffuse = XMFLOAT4(0.5f, 0.5f, 0.5f, 0.5f);
 	Sun.Specular = XMFLOAT4(0.2f, 0.2f, 0.2f, 0.2f);
-	Sun.SunPosition = XMFLOAT3(150, 300, 150);
+	Sun.SunPosition = XMFLOAT3(0, 300, 0);
 	Sun.mp = 0;
 }
 

@@ -7,7 +7,7 @@ Texture2D ShadowMap:register(t5);
 
 SamplerState pointSampler;
 
-cbuffer Sun : register (b0)//lägg till
+cbuffer Sun : register (b0)//lägg till ljusets matrix
 {
 	float4 Ambient;
 	float4 Diffuse;
@@ -33,10 +33,13 @@ float4 main(in float4 screenPos : SV_Position) : SV_TARGET // Fixa shadow mappin
 	//float4 shadow = ShadowMap.Load(screenPos);
 	float4 shadow = ShadowMap.Sample(pointSampler,screenPos.xy);
 
-	return float4(shadow.x, shadow.y, shadow.x, 1.0f);
+	//return float4(shadow.z, shadow.z, shadow.z, 1.0f);
+
+	//return float4(shadow.x, shadow.y, shadow.z, 1.0f);
 	float4 D = float4(0.0f, 0.0f, 0.0f, 0.0f);
 	float4 S = float4(0.0f, 0.0f, 0.0f, 0.0f);
 	float3 lightVector = normalize(SunPosition);
+
 	A = materialAmbient*Ambient;
 	
 	float3 toEye = normalize(screenPos.xyz - Pos.xyz);
@@ -52,7 +55,7 @@ float4 main(in float4 screenPos : SV_Position) : SV_TARGET // Fixa shadow mappin
 		S = specFactor*matSpec*Specular;
 	}
 
-	finalCol = Text*(A*Occ + (shadow*D)) +S*shadow;
+	finalCol = Text*(A*Occ + (/*shadow**/D)) + S/**shadow*/;
 
 	return finalCol;
 }

@@ -51,13 +51,9 @@ void ShadowMap::StartUp(ID3D11Device* device, ID3D11DeviceContext* devCon,Matrix
 	//Shader
 
 	HRESULT hr;
-	//create input layout to VertexShader
-	D3D11_INPUT_ELEMENT_DESC inputDesc[] = {
-		{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 }
-	};
 
 	ID3DBlob* pSSVS = nullptr;
-	D3DCompileFromFile(L"ShadowMap.hlsl", NULL, NULL, "main", "vs_5_0", 0, NULL, &pSSVS, NULL);
+	hr = D3DCompileFromFile(L"ShadowMap.hlsl", NULL, NULL, "main", "vs_5_0", 0, NULL, &pSSVS, NULL);
 
 	hr = device->CreateVertexShader(pSSVS->GetBufferPointer(), pSSVS->GetBufferSize(), nullptr, &shadowMapVertexShader);
 
@@ -77,7 +73,7 @@ void ShadowMap::prepRun(ID3D11DeviceContext* devCon)
 }
 
 void ShadowMap::close(ID3D11DeviceContext* devCon)
-{
+{	
 	ID3D11RenderTargetView* temp = { NULL };
 	devCon->OMSetRenderTargets(1, &temp, nullptr);
 	devCon->PSSetShaderResources(5, 1, &ShaderDepth);
