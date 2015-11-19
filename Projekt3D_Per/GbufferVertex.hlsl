@@ -5,7 +5,6 @@ cbuffer Matrixes : register(b0)
 	float4x4 Proj;
 }
 
-
 struct VS_IN
 {
 	float3 Pos : POSITION;

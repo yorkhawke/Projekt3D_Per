@@ -14,7 +14,7 @@ struct VS_IN
 
 float4 main(VS_IN input) :SV_POSITION
 {
-	float4 vPos = mul(World,input.Pos);
+	float4 vPos = mul(float4(input.Pos,1.0),World);
 	vPos = mul(vPos, View);
 	vPos = mul(vPos, Proj);
 

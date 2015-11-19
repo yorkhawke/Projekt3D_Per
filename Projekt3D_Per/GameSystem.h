@@ -35,6 +35,7 @@ private:
 	ID3D11SamplerState* SampleState;
 	ID3D11Buffer* ScreenBuffer;
 	ID3D11Buffer* MatrixBuffer;
+	ID3D11Buffer* SunBuffer;
 	ID3D11Buffer* LightBuffer;
 	Matrix matrix;
 	//ShaderResources

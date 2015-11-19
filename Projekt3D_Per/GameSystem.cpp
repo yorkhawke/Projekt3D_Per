@@ -102,16 +102,8 @@ void GameSystem::StartGame(float gametime, float fps,HINSTANCE hinstance)
 
 	Ssao.startUp(device, deviceContext);
 
-	XMVECTOR sunPos, lightPointTo, up;
-	sunPos = XMLoadFloat3(&Sun.SunPosition);
-	up = XMLoadFloat3(&XMFLOAT3(0, 0, 1));
-	lightPointTo = XMVector3Normalize(sunPos);
-
-	XMStoreFloat4x4(&sunMatrix.View,XMMatrixTranspose(XMMatrixLookAtLH(sunPos, lightPointTo, -up)));
-	XMStoreFloat4x4(&sunMatrix.World, XMMatrixTranspose(XMMatrixScaling(1.0, 1.0, 1.0)));
-	XMStoreFloat4x4(&sunMatrix.Proj, XMMatrixTranspose(XMMatrixPerspectiveFovLH(XM_PI / 3, 1040.0f / 800.0f, 0.5, 20000.0f)));
 	//View projektion from sunlight
-	shadow.StartUp(device,deviceContext,Sun.SunPosition,sunMatrix);
+	shadow.StartUp(device,deviceContext,sunMatrix);
 }
 
 void GameSystem::CreateBuffers()
@@ -141,7 +133,7 @@ void GameSystem::CreateBuffers()
 	//WorldViewProj Matrixes
 	D3D11_BUFFER_DESC WorMatri;
 	WorMatri.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-	WorMatri.ByteWidth = sizeof(XMFLOAT4X4)* 3;
+	WorMatri.ByteWidth = sizeof(Matrix);
 	WorMatri.MiscFlags = 0;
 	WorMatri.StructureByteStride = 0;
 	WorMatri.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
@@ -170,6 +162,22 @@ void GameSystem::CreateBuffers()
 	LightData.pSysMem = &Sun;
 
 	device->CreateBuffer(&SunData, &LightData, &LightBuffer);
+
+	XMVECTOR sunPos, lightPointTo, up;
+	sunPos = XMLoadFloat3(&Sun.SunPosition);
+	up = XMLoadFloat3(&XMFLOAT3(0, 0, 1));
+	lightPointTo = XMVector3Normalize(sunPos);
+
+	XMStoreFloat4x4(&sunMatrix.View, XMMatrixTranspose(XMMatrixLookAtLH(sunPos, lightPointTo, -up)));
+	XMStoreFloat4x4(&sunMatrix.World, XMMatrixTranspose(XMMatrixScaling(1.0, 1.0, 1.0)));
+	XMStoreFloat4x4(&sunMatrix.Proj, XMMatrixTranspose(XMMatrixPerspectiveFovLH(XM_PI / 3, 1040.0f / 800.0f, 0.5, 20000.0f)));
+	
+	//matrixbuffer
+	ZeroMemory(&DATA, sizeof(DATA));
+	DATA.pSysMem = &sunMatrix;
+
+	device->CreateBuffer(&WorMatri, &DATA, &SunBuffer);
+
 }
 
 void GameSystem::createShaders()
@@ -251,17 +259,17 @@ void GameSystem::Render()
 
 	hMap.render(deviceContext);
 	obj.render(deviceContext);
-	DeferedRendering.setShaderResources(deviceContext);
+
 
 	//Shadow
+	deviceContext->VSSetConstantBuffers(0, 1, &SunBuffer);
 	shadow.prepRun(deviceContext);
-
 	hMap.render(deviceContext);
-	obj.render(deviceContext);// fel då jag sätter texture igen :/
+	obj.render(deviceContext);
 	shadow.close(deviceContext);
+	//deviceContext->VSSetConstantBuffers(0, 1, &MatrixBuffer);
+	DeferedRendering.setShaderResources(deviceContext);
 
-
-	deviceContext->VSSetConstantBuffers(0, 1, &MatrixBuffer);
 
 	//SSAO
 	XMFLOAT4X4 oTemp;
@@ -281,6 +289,7 @@ void GameSystem::Render()
 	DeferedRendering.Render(device, deviceContext);
 
 	//kolla shadowmappen
+	shadow.testis(deviceContext);
 	swapChain->Present(0, 0);
 
 	XMFLOAT3 posT = cam.getPos();

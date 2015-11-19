@@ -8,17 +8,18 @@ public:
 	ShadowMap();
 	~ShadowMap();
 
-	void StartUp(ID3D11Device* device, ID3D11DeviceContext* devCon,XMFLOAT3 Sun, Matrix light);
+	void StartUp(ID3D11Device* device, ID3D11DeviceContext* devCon, Matrix light);
 	void prepRun(ID3D11DeviceContext* devCon );
 	void close(ID3D11DeviceContext* devCon);
+	void testis(ID3D11DeviceContext* devCon);
 
 private:
 	ID3D11VertexShader* shadowMapVertexShader;
-	ID3D11Buffer* MatrixBuffer;
 	ID3D11ShaderResourceView* ShaderDepth;
 	ID3D11Texture2D* depthStencilBuffer;
 	ID3D11DepthStencilState* depthStencilState;
 	ID3D11DepthStencilView* depthStencilView;
+	ID3D11RenderTargetView* test;
 };
 
 

@@ -10,7 +10,7 @@ ShadowMap::~ShadowMap()
 
 }
 
-void ShadowMap::StartUp(ID3D11Device* device, ID3D11DeviceContext* devCon,XMFLOAT3 Sun,Matrix light)
+void ShadowMap::StartUp(ID3D11Device* device, ID3D11DeviceContext* devCon,Matrix light)
 {
 	D3D11_TEXTURE2D_DESC depthBufferDesc;
 	D3D11_DEPTH_STENCIL_DESC depthStencilDesc;
@@ -48,7 +48,12 @@ void ShadowMap::StartUp(ID3D11Device* device, ID3D11DeviceContext* devCon,XMFLOA
 
 	device->CreateShaderResourceView(depthStencilBuffer, &shaderResDesc, &ShaderDepth);
 
+	D3D11_RENDER_TARGET_VIEW_DESC testDesc;
+	testDesc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
+	testDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
+	testDesc.Texture2D.MipSlice = 0;
 
+	device->CreateRenderTargetView(depthStencilBuffer, &testDesc, &test);
 	//Shader
 
 	HRESULT hr;
@@ -63,22 +68,6 @@ void ShadowMap::StartUp(ID3D11Device* device, ID3D11DeviceContext* devCon,XMFLOA
 	hr = device->CreateVertexShader(pSSVS->GetBufferPointer(), pSSVS->GetBufferSize(), nullptr, &shadowMapVertexShader);
 
 
-	//WorldViewProj Matrixes
-	D3D11_BUFFER_DESC WorMatri;
-	WorMatri.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-	WorMatri.ByteWidth = sizeof(Matrix);
-	WorMatri.MiscFlags = 0;
-	WorMatri.StructureByteStride = 0;
-	WorMatri.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-	WorMatri.Usage = D3D11_USAGE_DYNAMIC;
-
-	D3D11_SUBRESOURCE_DATA DATA;
-	//matrixbuffer
-	ZeroMemory(&DATA, sizeof(DATA));
-	DATA.pSysMem = &light;
-
-	device->CreateBuffer(&WorMatri, &DATA, &MatrixBuffer);
-	devCon->VSSetConstantBuffers(1, 1, &MatrixBuffer);
 }
 
 void ShadowMap::prepRun(ID3D11DeviceContext* devCon)
@@ -89,9 +78,7 @@ void ShadowMap::prepRun(ID3D11DeviceContext* devCon)
 	devCon->ClearDepthStencilView(depthStencilView, 0, 0, 0);
 	ID3D11RenderTargetView* temp = { NULL };
 	devCon->OMSetRenderTargets(1, &temp,depthStencilView);
-
-	//ska inte draw shiten.... det är inte en quad som ska ritas utan alla objkten som ska ha skugga som ska ritas.....
-	//sedan skickas vidare till pixelshadern. Ljusmatrixen då asså och kolla ifall avståndet mellan shadowmappen och den pixeln ifall vilken som är störst....
+	// Ljusmatrixen då asså och kolla ifall avståndet mellan shadowmappen och den pixeln ifall vilken som är störst....
 
 }
 
@@ -100,6 +87,11 @@ void ShadowMap::close(ID3D11DeviceContext* devCon)
 	ID3D11RenderTargetView* temp = { NULL };
 	devCon->OMSetRenderTargets(1, &temp, nullptr);
 	devCon->PSSetShaderResources(5, 1, &ShaderDepth);
+}
+
+void ShadowMap::testis(ID3D11DeviceContext* devCon)
+{
+	devCon->OMSetRenderTargets(1, &test, nullptr);
 }
 
 
