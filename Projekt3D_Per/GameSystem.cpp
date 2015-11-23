@@ -50,8 +50,6 @@ HRESULT GameSystem::CreateSwapChain()
 
 void GameSystem::StartGame(float gametime, float fps,HINSTANCE hinstance)
 {
-
-
 	//window
 	mainHwnd.CreateHwnd(hinstance,WndProc);
 	//time
@@ -221,8 +219,7 @@ void GameSystem::Render()
 	gameTime.Update();
 	//gameTime.ShowFPS();
 
-	DeferedRendering.setGBufferShaders(deviceContext);
-	DeferedRendering.clearBuffer(deviceContext);
+
 
 	cam.Update();
 	//UPPDATING MATRIXBUFFER
@@ -253,16 +250,10 @@ void GameSystem::Render()
 
 	deviceContext->Unmap(MatrixBuffer, 0);
 	//--------------UPDATING MATRIXES-----------------------------
-
-	DeferedRendering.OMSetRender(device, deviceContext, directX.getDepthView(deviceContext));
-
-	//draw obj
-
-	hMap.render(deviceContext);
-	obj.render(deviceContext);
-
-	DeferedRendering.nullRender(deviceContext);
 	//Shadow
+
+	DeferedRendering.setGBufferShaders(deviceContext);
+
 	deviceContext->VSSetConstantBuffers(1, 1, &SunBuffer);
 	shadow.prepRun(deviceContext);
 
@@ -270,8 +261,21 @@ void GameSystem::Render()
 	obj.render(deviceContext);
 
 	shadow.close(deviceContext);
-	DeferedRendering.setShaderResources(deviceContext);
+
 	deviceContext->VSSetConstantBuffers(0, 1, &MatrixBuffer);
+
+	DeferedRendering.setGBufferShaders(deviceContext);
+	DeferedRendering.clearBuffer(deviceContext);
+
+	DeferedRendering.OMSetRender(device, deviceContext, directX.getDepthView(deviceContext));
+	deviceContext->VSSetConstantBuffers(0, 1, &MatrixBuffer);
+	//draw obj
+
+	hMap.render(deviceContext);
+	obj.render(deviceContext);
+
+	DeferedRendering.nullRender(deviceContext);
+	DeferedRendering.setShaderResources(deviceContext);
 
 	//SSAO
 	XMFLOAT4X4 oTemp;

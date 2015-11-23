@@ -49,14 +49,12 @@ void ShadowMap::StartUp(ID3D11Device* device, ID3D11DeviceContext* devCon,Matrix
 	device->CreateShaderResourceView(depthStencilBuffer, &shaderResDesc, &ShaderDepth);
 
 	//Shader
-
 	HRESULT hr;
 
 	ID3DBlob* pSSVS = nullptr;
 	hr = D3DCompileFromFile(L"ShadowMap.hlsl", NULL, NULL, "main", "vs_5_0", 0, NULL, &pSSVS, NULL);
 
 	hr = device->CreateVertexShader(pSSVS->GetBufferPointer(), pSSVS->GetBufferSize(), nullptr, &shadowMapVertexShader);
-
 
 }
 
