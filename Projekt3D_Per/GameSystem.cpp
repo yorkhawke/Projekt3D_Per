@@ -263,7 +263,7 @@ void GameSystem::Render()
 
 	DeferedRendering.nullRender(deviceContext);
 	//Shadow
-	deviceContext->VSSetConstantBuffers(0, 1, &SunBuffer);
+	deviceContext->VSSetConstantBuffers(1, 1, &SunBuffer);
 	shadow.prepRun(deviceContext);
 
 	hMap.render(deviceContext);
