@@ -169,7 +169,7 @@ void GameSystem::CreateBuffers()
 	XMMATRIX worldTemp = XMLoadFloat4x4(&worldfloatTemp);
 	XMStoreFloat4x4(&sunMatrix.View, XMMatrixTranspose(XMMatrixLookAtLH(sunPos, -lightPointTo, up)));
 	XMStoreFloat4x4(&sunMatrix.World, worldTemp);
-	XMStoreFloat4x4(&sunMatrix.Proj,XMMatrixTranspose(XMMatrixOrthographicLH(800, 1040, 1, 100)));
+	XMStoreFloat4x4(&sunMatrix.Proj,XMMatrixTranspose(XMMatrixOrthographicLH(400, 400, 1, 100)));
 	
 	//matrixbuffer
 	ZeroMemory(&DATA, sizeof(DATA));
@@ -309,7 +309,7 @@ void GameSystem::LightSun()
 	Sun.ambient = XMFLOAT4(0.5f, 0.5f, 0.5f, 0.5f);
 	Sun.Diffuse = XMFLOAT4(0.5f, 0.5f, 0.5f, 0.5f);
 	Sun.Specular = XMFLOAT4(0.2f, 0.2f, 0.2f, 0.2f);
-	Sun.SunPosition = XMFLOAT3(0, 300, 0);
+	Sun.SunPosition = XMFLOAT3(30, 100, 0);
 	Sun.mp = 0;
 }
 
