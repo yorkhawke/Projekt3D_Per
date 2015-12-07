@@ -145,6 +145,7 @@ void GameSystem::CreateBuffers()
 	device->CreateBuffer(&WorMatri, &DATA, &MatrixBuffer);
 	deviceContext->VSSetConstantBuffers(0, 1, &MatrixBuffer);
 
+
 	LightSun();
 
 	//Light buffer
@@ -156,10 +157,7 @@ void GameSystem::CreateBuffers()
 	SunData.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 	SunData.Usage = D3D11_USAGE_DYNAMIC;
 
-	D3D11_SUBRESOURCE_DATA LightData;
-	LightData.pSysMem = &Sun;
 
-	device->CreateBuffer(&SunData, &LightData, &LightBuffer);
 
 	XMVECTOR sunPos, lightPointTo, up;
 	sunPos = XMLoadFloat3(&Sun.SunPosition);
@@ -171,12 +169,27 @@ void GameSystem::CreateBuffers()
 	XMStoreFloat4x4(&sunMatrix.World, worldTemp);
 	XMStoreFloat4x4(&sunMatrix.Proj,XMMatrixTranspose(XMMatrixOrthographicLH(400, 400, 1, 100)));
 	
+	XMMATRIX temp1, temp2;
+	temp1 = XMLoadFloat4x4(&sunMatrix.View);
+	temp2 = XMLoadFloat4x4(&sunMatrix.Proj);
+	XMStoreFloat4x4(&Sun.Dlvp, XMMatrixMultiplyTranspose(temp1, temp2));
 	//matrixbuffer
 	ZeroMemory(&DATA, sizeof(DATA));
 	DATA.pSysMem = &sunMatrix;
 
+	D3D11_SUBRESOURCE_DATA LightData;
+	LightData.pSysMem = &Sun;
+
+	device->CreateBuffer(&SunData, &LightData, &LightBuffer);
 	device->CreateBuffer(&WorMatri, &DATA, &SunBuffer);
 
+	WorMatri.ByteWidth = sizeof(PixelMatrix);
+	XMStoreFloat4x4(&pixMatri.inVp, XMMatrixInverse(nullptr, XMMatrixMultiplyTranspose(cam.GetProjMa(), cam.GetViewMa())));
+
+	ZeroMemory(&DATA, sizeof(DATA));
+	DATA.pSysMem = &pixMatri;
+	device->CreateBuffer(&WorMatri, &DATA, &MatrixPixelB);
+	deviceContext->PSSetConstantBuffers(2, 1, &MatrixPixelB);
 }
 
 void GameSystem::createShaders()
@@ -220,7 +233,6 @@ void GameSystem::Render()
 	//gameTime.ShowFPS();
 
 
-
 	cam.Update();
 	//UPPDATING MATRIXBUFFER
 	//Check for input
@@ -238,7 +250,7 @@ void GameSystem::Render()
 
 	D3D11_MAPPED_SUBRESOURCE MapDATA;
 	Matrix* temp;
-
+	PixelMatrix* temp1;
 	ZeroMemory(&MapDATA, sizeof(MapDATA));
 
 	deviceContext->Map(MatrixBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &MapDATA);
@@ -249,6 +261,15 @@ void GameSystem::Render()
 	temp->Proj = matrix.Proj;
 
 	deviceContext->Unmap(MatrixBuffer, 0);
+
+	//ZeroMemory(&MapDATA, sizeof(MapDATA));
+
+	//deviceContext->Map(MatrixPixelB, 0, D3D11_MAP_WRITE_DISCARD, 0, &MapDATA);
+
+	//temp1 = (PixelMatrix*)MapDATA.pData;
+	//XMStoreFloat4x4(&temp1->inVp, XMMatrixInverse(nullptr, XMMatrixMultiplyTranspose(cam.GetProjMa(), cam.GetViewMa())));
+
+	//deviceContext->Unmap(MatrixPixelB, 0);
 	//--------------UPDATING MATRIXES-----------------------------
 	//Shadow
 
@@ -291,7 +312,7 @@ void GameSystem::Render()
 	DeferedRendering.OMSetBackBuff(deviceContext);
 
 	deviceContext->PSSetConstantBuffers(0, 1, &LightBuffer);
-
+	deviceContext->PSSetConstantBuffers(2, 1, &MatrixPixelB);
 	DeferedRendering.Render(device, deviceContext);
 
 	//kolla shadowmappen
@@ -309,7 +330,7 @@ void GameSystem::LightSun()
 	Sun.ambient = XMFLOAT4(0.5f, 0.5f, 0.5f, 0.5f);
 	Sun.Diffuse = XMFLOAT4(0.5f, 0.5f, 0.5f, 0.5f);
 	Sun.Specular = XMFLOAT4(0.2f, 0.2f, 0.2f, 0.2f);
-	Sun.SunPosition = XMFLOAT3(30, 100, 0);
+	Sun.SunPosition = XMFLOAT3(60, 100, 45);
 	Sun.mp = 0;
 }
 

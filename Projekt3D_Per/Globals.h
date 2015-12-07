@@ -37,6 +37,7 @@ struct DirectionalLight
 	XMFLOAT4 ambient;
 	XMFLOAT4 Diffuse;
 	XMFLOAT4 Specular;
+	XMFLOAT4X4 Dlvp;
 	XMFLOAT3 SunPosition;
 	float mp;
 };
@@ -46,6 +47,11 @@ struct Matrix
 	XMFLOAT4X4 World;
 	XMFLOAT4X4 View;
 	XMFLOAT4X4 Proj;
+};
+
+struct PixelMatrix
+{
+	XMFLOAT4X4 inVp;
 };
 
 #endif

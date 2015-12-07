@@ -37,6 +37,7 @@ private:
 	ID3D11Buffer* MatrixBuffer;
 	ID3D11Buffer* SunBuffer;
 	ID3D11Buffer* LightBuffer;
+	ID3D11Buffer* MatrixPixelB;
 	Matrix matrix;
 	//ShaderResources
 
@@ -49,6 +50,7 @@ private:
 	Matrix sunMatrix;
 	DirectionalLight Sun;
 	ShadowMap shadow;
+	PixelMatrix pixMatri;
 
 public:
 	GameSystem();
