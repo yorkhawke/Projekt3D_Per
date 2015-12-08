@@ -161,18 +161,22 @@ void GameSystem::CreateBuffers()
 
 	XMVECTOR sunPos, lightPointTo, up;
 	sunPos = XMLoadFloat3(&Sun.SunPosition);
-	up = XMLoadFloat3(&XMFLOAT3(0, 0, 1));
-	lightPointTo = XMVector3Normalize(sunPos);
+	up = XMLoadFloat3(&XMFLOAT3(0, 1, 0));
+	XMVECTOR dir = XMLoadFloat3(&XMFLOAT3(0, 0, 1));
+	lightPointTo = sunPos+dir;
+	//XMVECTOR lt;
+	//lt = XMLoadFloat4(&XMFLOAT4(0.0, 0.0, 0.0, 0.0));
 	XMFLOAT4X4 const worldfloatTemp = matrix.World;
 	XMMATRIX worldTemp = XMLoadFloat4x4(&worldfloatTemp);
-	XMStoreFloat4x4(&sunMatrix.View, XMMatrixTranspose(XMMatrixLookAtLH(sunPos, -lightPointTo, up)));
 	XMStoreFloat4x4(&sunMatrix.World, worldTemp);
-	XMStoreFloat4x4(&sunMatrix.Proj,XMMatrixTranspose(XMMatrixOrthographicLH(400, 400, 1, 100)));
+	XMStoreFloat4x4(&sunMatrix.View, XMMatrixTranspose(XMMatrixLookAtLH(sunPos, -lightPointTo, up)));
+	XMStoreFloat4x4(&sunMatrix.Proj,XMMatrixTranspose(XMMatrixOrthographicLH(350, 350, 0.5, 300.0f)));
 	
 	XMMATRIX temp1, temp2;
 	temp1 = XMLoadFloat4x4(&sunMatrix.View);
 	temp2 = XMLoadFloat4x4(&sunMatrix.Proj);
-	XMStoreFloat4x4(&Sun.Dlvp, XMMatrixMultiplyTranspose(temp1, temp2));
+	XMStoreFloat4x4(&Sun.Dlvp, XMMatrixMultiply(temp1, temp2));
+
 	//matrixbuffer
 	ZeroMemory(&DATA, sizeof(DATA));
 	DATA.pSysMem = &sunMatrix;
@@ -184,7 +188,7 @@ void GameSystem::CreateBuffers()
 	device->CreateBuffer(&WorMatri, &DATA, &SunBuffer);
 
 	WorMatri.ByteWidth = sizeof(PixelMatrix);
-	XMStoreFloat4x4(&pixMatri.inVp, XMMatrixInverse(nullptr, XMMatrixMultiplyTranspose(cam.GetProjMa(), cam.GetViewMa())));
+	XMStoreFloat4x4(&pixMatri.inVp, XMMatrixInverse(nullptr, XMMatrixMultiply(cam.GetViewMa(), cam.GetProjMa())));
 
 	ZeroMemory(&DATA, sizeof(DATA));
 	DATA.pSysMem = &pixMatri;
@@ -243,8 +247,6 @@ void GameSystem::Render()
 	Pos.y = hMap.HMap(Pos.x, Pos.z) + 10.0f;
 	cam.setPos(Pos);
 
-
-
 	XMStoreFloat4x4(&matrix.View, XMMatrixTranspose(cam.GetViewMa()));
 	XMStoreFloat4x4(&matrix.Proj, XMMatrixTranspose(cam.GetProjMa()));
 
@@ -262,23 +264,23 @@ void GameSystem::Render()
 
 	deviceContext->Unmap(MatrixBuffer, 0);
 
-	//ZeroMemory(&MapDATA, sizeof(MapDATA));
+	ZeroMemory(&MapDATA, sizeof(MapDATA));
 
-	//deviceContext->Map(MatrixPixelB, 0, D3D11_MAP_WRITE_DISCARD, 0, &MapDATA);
+	deviceContext->Map(MatrixPixelB, 0, D3D11_MAP_WRITE_DISCARD, 0, &MapDATA);
 
-	//temp1 = (PixelMatrix*)MapDATA.pData;
-	//XMStoreFloat4x4(&temp1->inVp, XMMatrixInverse(nullptr, XMMatrixMultiplyTranspose(cam.GetProjMa(), cam.GetViewMa())));
+	temp1 = (PixelMatrix*)MapDATA.pData;
+	XMStoreFloat4x4(&temp1->inVp, XMMatrixInverse(nullptr, XMMatrixMultiply(cam.GetViewMa(), cam.GetProjMa())));
 
-	//deviceContext->Unmap(MatrixPixelB, 0);
+	deviceContext->Unmap(MatrixPixelB, 0);
 	//--------------UPDATING MATRIXES-----------------------------
 	//Shadow
 
 	DeferedRendering.setGBufferShaders(deviceContext);
 
 	deviceContext->VSSetConstantBuffers(1, 1, &SunBuffer);
-	shadow.prepRun(deviceContext);
+	shadow.prepRun(deviceContext);//this is were shit is going down. somhow i only get my cleared value from the depthStencilView
 
-	hMap.render(deviceContext);
+	hMap.render(deviceContext); //not shadows for heeihgmap
 	obj.render(deviceContext);
 
 	shadow.close(deviceContext);
@@ -289,6 +291,7 @@ void GameSystem::Render()
 	DeferedRendering.clearBuffer(deviceContext);
 
 	DeferedRendering.OMSetRender(device, deviceContext, directX.getDepthView(deviceContext));
+
 	deviceContext->VSSetConstantBuffers(0, 1, &MatrixBuffer);
 	//draw obj
 
@@ -330,7 +333,7 @@ void GameSystem::LightSun()
 	Sun.ambient = XMFLOAT4(0.5f, 0.5f, 0.5f, 0.5f);
 	Sun.Diffuse = XMFLOAT4(0.5f, 0.5f, 0.5f, 0.5f);
 	Sun.Specular = XMFLOAT4(0.2f, 0.2f, 0.2f, 0.2f);
-	Sun.SunPosition = XMFLOAT3(60, 100, 45);
+	Sun.SunPosition = XMFLOAT3(0, 100, 0);
 	Sun.mp = 0;
 }
 

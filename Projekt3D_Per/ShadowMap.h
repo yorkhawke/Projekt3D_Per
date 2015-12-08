@@ -17,7 +17,7 @@ private:
 	ID3D11ShaderResourceView* ShaderDepth;
 	ID3D11Texture2D* depthStencilBuffer;
 	ID3D11DepthStencilState* depthStencilState;
-	ID3D11DepthStencilView* depthStencilView;
+	ID3D11DepthStencilView* ShadowStencilView;
 };
 
 

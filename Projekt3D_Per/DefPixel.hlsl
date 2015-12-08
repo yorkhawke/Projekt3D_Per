@@ -7,15 +7,6 @@ Texture2D ShadowMap:register(t5);
 
 SamplerState pointSampler;
 
-static const float dx = 1.0;
-
-static const float2 off[9] = {
-	float2(-dx,-dx),float2(0.0f,-dx),float2(dx,-dx),
-	float2(-dx,0.0f),float2(0.0f,0.0f),float2(dx,0.0f),
-	float2(-dx,dx),float2(0.0f,dx),float2(dx,dx)
-};
-
-
 cbuffer Sun : register (b0)//lägg till ljusets matrix
 {
 	float4 Ambient;
@@ -64,16 +55,29 @@ float4 main(in float4 screenPos : SV_Position) : SV_TARGET
 		S = specFactor*matSpec*Specular;
 	}
 
-	float4 wPos = mul(Pos, inversVP);
-	//in world space neutral
-	float4 ShadowPH = mul(wPos, SunVP);
-	//to the fucking SUN
-	ShadowPH.xyz /= ShadowPH.w;
-	float4 shadow = ShadowMap.Sample(pointSampler, (ShadowPH.xy / float2(1040, 800)));
+	float4x4 test = {
+		0.5,0.0,0.0,0.0,
+		0.0,0.5,0.0,0.0,
+		0.0,0.0,0.5,0.0,
+		0.5,0.5,0.5,1.0,
 
+	};
+
+	float4 ShadowPH = mul(mul(Pos, SunVP),test);
+	//to the fucking SUN
+	//return ShadowPH;
+	float depth = 1-ShadowPH.z/ShadowPH.w;
+	float2 projPos = 0.5 * ShadowPH.xy/ShadowPH.w +float2(0.5,0.5);
+
+	projPos.y = 1.0f - projPos.y;
+
+	float4 zdepth = ShadowMap.Sample(pointSampler, projPos);
+	//float4 zdepth = ShadowMap.Sample(pointSampler, ShadowPH.xy);
+	return zdepth;
 	float shade = 1.0f;
-	if(ShadowPH.z>shadow.z)
-		shade = 0.5f;
+
+	//if(depth<zdepth-0.03)
+	//	shade = 0.5f;
 
 	finalCol = Text*(A*Occ + (shade*D)) + S*shade;
 

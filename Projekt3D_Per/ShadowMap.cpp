@@ -39,7 +39,7 @@ void ShadowMap::StartUp(ID3D11Device* device, ID3D11DeviceContext* devCon,Matrix
 	dpVdesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
 	dpVdesc.Texture2D.MipSlice = 0;
 
-	device->CreateDepthStencilView(depthStencilBuffer, &dpVdesc, &depthStencilView);
+	device->CreateDepthStencilView(depthStencilBuffer, &dpVdesc, &ShadowStencilView);
 
 	shaderResDesc.Format = DXGI_FORMAT_R24_UNORM_X8_TYPELESS;
 	shaderResDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
@@ -64,9 +64,9 @@ void ShadowMap::prepRun(ID3D11DeviceContext* devCon)
 	devCon->VSSetShader(shadowMapVertexShader, nullptr,0);
 	devCon->PSSetShader(nullptr, nullptr, 0);
 
-	devCon->ClearDepthStencilView(depthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
+	devCon->ClearDepthStencilView(ShadowStencilView, D3D11_CLEAR_DEPTH||D3D11_CLEAR_STENCIL, 1.0f, 0);
 	ID3D11RenderTargetView* temp = { NULL };
-	devCon->OMSetRenderTargets(1, &temp,depthStencilView);
+	devCon->OMSetRenderTargets(1, &temp, ShadowStencilView);
 	// Ljusmatrixen då asså och kolla ifall avståndet mellan shadowmappen och den pixeln ifall vilken som är störst....
 
 }
