@@ -12,15 +12,22 @@ cbuffer Sun : register (b0)//lägg till ljusets matrix
 	float4 Ambient;
 	float4 Diffuse;
 	float4 Specular;
-	float4x4 SunVP;
+	float4x4 SunVP;//not neeeded
 	float3 SunPosition;
 	float mp;
 };
 
 cbuffer pixMatrix : register (b2)
 {
-	float4x4 inversVP;
+	float4x4 inversVP;//not needed
 };
+
+cbuffer SunMatrix : register (b3)
+{
+	float4x4 SW;
+	float4x4 SV;
+	float4x4 SP;
+}
 
 float4 main(in float4 screenPos : SV_Position) : SV_TARGET 
 {
@@ -55,29 +62,21 @@ float4 main(in float4 screenPos : SV_Position) : SV_TARGET
 		S = specFactor*matSpec*Specular;
 	}
 
-	float4x4 test = {
-		0.5,0.0,0.0,0.0,
-		0.0,0.5,0.0,0.0,
-		0.0,0.0,0.5,0.0,
-		0.5,0.5,0.5,1.0,
 
-	};
-
-	float4 ShadowPH = mul(mul(Pos, SunVP),test);
+	float4 ShadowPH = mul(mul(Pos, SV),SP);
+	
+	ShadowPH.xyz /= ShadowPH.w;
 	//to the fucking SUN
-	//return ShadowPH;
-	float depth = 1-ShadowPH.z/ShadowPH.w;
-	float2 projPos = 0.5 * ShadowPH.xy/ShadowPH.w +float2(0.5,0.5);
 
-	projPos.y = 1.0f - projPos.y;
+	ShadowPH.x = ShadowPH.x / 2.0f + 0.5f;
+	ShadowPH.y = ShadowPH.y / (-2.0f) + 0.5f;
 
-	float4 zdepth = ShadowMap.Sample(pointSampler, projPos);
-	//float4 zdepth = ShadowMap.Sample(pointSampler, ShadowPH.xy);
-	return zdepth;
+	float d = ShadowMap.Sample(pointSampler, ShadowPH.xy).r;
+	float bias = 0.0005f;
 	float shade = 1.0f;
+	if (d + bias < ShadowPH.z)
+		shade = 0.5f;
 
-	//if(depth<zdepth-0.03)
-	//	shade = 0.5f;
 
 	finalCol = Text*(A*Occ + (shade*D)) + S*shade;
 
