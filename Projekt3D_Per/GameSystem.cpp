@@ -171,10 +171,6 @@ void GameSystem::CreateBuffers()
 	XMStoreFloat4x4(&sunMatrix.View, XMMatrixTranspose(XMMatrixLookAtLH(sunPos, -lightPointTo, up)));
 	XMStoreFloat4x4(&sunMatrix.Proj,XMMatrixTranspose(XMMatrixOrthographicLH(400, 400, 0.5, 500.0f)));
 	
-	XMMATRIX temp1, temp2;
-	temp1 = XMLoadFloat4x4(&sunMatrix.View);
-	temp2 = XMLoadFloat4x4(&sunMatrix.Proj);
-	XMStoreFloat4x4(&Sun.Dlvp, XMMatrixMultiply(temp1, temp2));
 
 	//matrixbuffer
 	ZeroMemory(&DATA, sizeof(DATA));
@@ -186,13 +182,6 @@ void GameSystem::CreateBuffers()
 	device->CreateBuffer(&SunData, &LightData, &LightBuffer);
 	device->CreateBuffer(&WorMatri, &DATA, &SunBuffer);
 
-	WorMatri.ByteWidth = sizeof(PixelMatrix);
-	XMStoreFloat4x4(&pixMatri.inVp, XMMatrixInverse(nullptr, XMMatrixMultiply(cam.GetViewMa(), cam.GetProjMa())));
-
-	ZeroMemory(&DATA, sizeof(DATA));
-	DATA.pSysMem = &pixMatri;
-	device->CreateBuffer(&WorMatri, &DATA, &MatrixPixelB);
-	deviceContext->PSSetConstantBuffers(2, 1, &MatrixPixelB);
 }
 
 void GameSystem::createShaders()
@@ -261,25 +250,15 @@ void GameSystem::Render()
 	temp->View =  matrix.View;
 	temp->Proj = matrix.Proj;
 
-	deviceContext->Unmap(MatrixBuffer, 0);
-
-	ZeroMemory(&MapDATA, sizeof(MapDATA));
-
-	deviceContext->Map(MatrixPixelB, 0, D3D11_MAP_WRITE_DISCARD, 0, &MapDATA);
-
-	temp1 = (PixelMatrix*)MapDATA.pData;
-	XMStoreFloat4x4(&temp1->inVp, XMMatrixInverse(nullptr, XMMatrixMultiply(cam.GetViewMa(), cam.GetProjMa())));
-
-	deviceContext->Unmap(MatrixPixelB, 0);
 	//--------------UPDATING MATRIXES-----------------------------
 	//Shadow
 
 	DeferedRendering.setGBufferShaders(deviceContext);
 
 	deviceContext->VSSetConstantBuffers(1, 1, &SunBuffer);
-	shadow.prepRun(deviceContext);//this is were shit is going down. somhow i only get my cleared value from the depthStencilView
+	shadow.prepRun(deviceContext);
 
-	hMap.render(deviceContext); //not shadows for heeihgmap
+	hMap.render(deviceContext); 
 	obj.render(deviceContext);
 
 	shadow.close(deviceContext);
@@ -315,7 +294,6 @@ void GameSystem::Render()
 
 	deviceContext->PSSetConstantBuffers(0, 1, &LightBuffer);
 	deviceContext->PSSetConstantBuffers(3, 1, &SunBuffer);
-	deviceContext->PSSetConstantBuffers(2, 1, &MatrixPixelB);
 	DeferedRendering.Render(device, deviceContext);
 
 	//kolla shadowmappen

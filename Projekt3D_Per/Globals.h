@@ -37,7 +37,6 @@ struct DirectionalLight
 	XMFLOAT4 ambient;
 	XMFLOAT4 Diffuse;
 	XMFLOAT4 Specular;
-	XMFLOAT4X4 Dlvp;
 	XMFLOAT3 SunPosition;
 	float mp;
 };

@@ -12,14 +12,8 @@ cbuffer Sun : register (b0)//lägg till ljusets matrix
 	float4 Ambient;
 	float4 Diffuse;
 	float4 Specular;
-	float4x4 SunVP;//not neeeded
 	float3 SunPosition;
 	float mp;
-};
-
-cbuffer pixMatrix : register (b2)
-{
-	float4x4 inversVP;//not needed
 };
 
 cbuffer SunMatrix : register (b3)
