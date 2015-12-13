@@ -171,7 +171,6 @@ void GameSystem::CreateBuffers()
 	XMStoreFloat4x4(&sunMatrix.View, XMMatrixTranspose(XMMatrixLookAtLH(sunPos, -lightPointTo, up)));
 	XMStoreFloat4x4(&sunMatrix.Proj,XMMatrixTranspose(XMMatrixOrthographicLH(400, 400, 0.5, 500.0f)));
 	
-
 	//matrixbuffer
 	ZeroMemory(&DATA, sizeof(DATA));
 	DATA.pSysMem = &sunMatrix;
@@ -181,6 +180,18 @@ void GameSystem::CreateBuffers()
 
 	device->CreateBuffer(&SunData, &LightData, &LightBuffer);
 	device->CreateBuffer(&WorMatri, &DATA, &SunBuffer);
+
+	ZeroMemory(&DATA, sizeof(DATA));
+
+	WorMatri.ByteWidth = sizeof(XMFLOAT3) + sizeof(float);
+
+	XMFLOAT3 camP = cam.getPos();
+
+	DATA.pSysMem = &camP;
+
+	device->CreateBuffer(&WorMatri, &DATA, &GeomBuff);
+	deviceContext->GSSetConstantBuffers(2, 1, &GeomBuff);
+
 
 }
 
@@ -240,7 +251,6 @@ void GameSystem::Render()
 
 	D3D11_MAPPED_SUBRESOURCE MapDATA;
 	Matrix* temp;
-	PixelMatrix* temp1;
 	ZeroMemory(&MapDATA, sizeof(MapDATA));
 
 	deviceContext->Map(MatrixBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &MapDATA);
@@ -250,6 +260,15 @@ void GameSystem::Render()
 	temp->View =  matrix.View;
 	temp->Proj = matrix.Proj;
 
+	deviceContext->Unmap(MatrixBuffer, 0);
+
+	deviceContext->Map(GeomBuff, 0, D3D11_MAP_WRITE_DISCARD, 0, &MapDATA);
+	XMFLOAT3* tempCP;
+
+	tempCP = (XMFLOAT3*)MapDATA.pData;
+	tempCP = &cam.getPos();
+
+	deviceContext->Unmap(GeomBuff, 0);
 	//--------------UPDATING MATRIXES-----------------------------
 	//Shadow
 

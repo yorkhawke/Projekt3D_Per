@@ -37,6 +37,7 @@ private:
 	ID3D11Buffer* MatrixBuffer;
 	ID3D11Buffer* SunBuffer;
 	ID3D11Buffer* LightBuffer;
+	ID3D11Buffer* GeomBuff;
 	Matrix matrix;
 	//ShaderResources
 
