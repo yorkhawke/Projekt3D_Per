@@ -44,7 +44,7 @@ HRESULT GameSystem::CreateSwapChain()
 	swapChainDesc.SampleDesc.Count = 1;
 	swapChainDesc.Flags = 0;
 
-	hr = D3D11CreateDeviceAndSwapChain(NULL, D3D_DRIVER_TYPE_HARDWARE, NULL, NULL /*D3D11_CREATE_DEVICE_DEBUG*/, NULL, NULL, D3D11_SDK_VERSION, &swapChainDesc, &swapChain, &device, NULL, &deviceContext);
+	hr = D3D11CreateDeviceAndSwapChain(NULL, D3D_DRIVER_TYPE_HARDWARE, NULL, D3D11_CREATE_DEVICE_DEBUG, NULL, NULL, D3D11_SDK_VERSION, &swapChainDesc, &swapChain, &device, NULL, &deviceContext);
 	return hr;
 }
 
@@ -259,20 +259,17 @@ void GameSystem::Render()
 	temp->World = matrix.World;
 	temp->View =  matrix.View;
 	temp->Proj = matrix.Proj;
-
 	deviceContext->Unmap(MatrixBuffer, 0);
+	//XMFLOAT3 tempCP = { 10,40,100000 };//cam.getPos();
+	ZeroMemory(&MapDATA, sizeof(MapDATA));
 
 	deviceContext->Map(GeomBuff, 0, D3D11_MAP_WRITE_DISCARD, 0, &MapDATA);
-	XMFLOAT3* tempCP;
-
-	tempCP = (XMFLOAT3*)MapDATA.pData;
-	tempCP = &cam.getPos();
-
+	memcpy(MapDATA.pData,&Pos, sizeof(XMFLOAT3));
 	deviceContext->Unmap(GeomBuff, 0);
 	//--------------UPDATING MATRIXES-----------------------------
 	//Shadow
 
-	DeferedRendering.setGBufferShaders(deviceContext);
+	DeferedRendering.setLayout(deviceContext);
 
 	deviceContext->VSSetConstantBuffers(1, 1, &SunBuffer);
 	shadow.prepRun(deviceContext);

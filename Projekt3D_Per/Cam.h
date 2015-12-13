@@ -21,11 +21,10 @@ public:
 	void Update();
 	void Walk(float d);
 	void Strafe(float d);
-	void MoveMouse(int x, int y);
 
 	void MoveX(float angle);
 	void MoveY(float angle);
-
+	XMFLOAT3 getDir();
 
 
 	void Input(float time, HWND hwnd);

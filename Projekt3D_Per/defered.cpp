@@ -118,6 +118,13 @@ void Defered::StartUp(ID3D11Device* dev, ID3D11DeviceContext *devCon, IDXGISwapC
 
 	hr = dev->CreatePixelShader(pPS->GetBufferPointer(), pPS->GetBufferSize(), nullptr, &DefPixelShader);
 	pPS->Release();
+
+	ID3DBlob* pGS = nullptr;
+	D3DCompileFromFile(L"GeometryShader.hlsl", NULL, NULL, "main", "gs_5_0", NULL, NULL, &pGS, nullptr);
+
+	hr = dev->CreateGeometryShader(pGS->GetBufferPointer(), pGS->GetBufferSize(), nullptr, &GGeomShader);
+	pGS->Release();
+
 	//---------------SHADERS--------------------------
 
 	//----------------------------BUFFER-------------------------------------
@@ -169,13 +176,14 @@ void Defered::clearBuffer(ID3D11DeviceContext *devCon)
 	devCon->ClearRenderTargetView(BackBuff, clearColor);
 }
 
-void Defered::createShaders(ID3D11Device* dev, ID3D11DeviceContext *devCon)
+void Defered::setLayout(ID3D11DeviceContext *devCon)
 {
-
+	devCon->IASetInputLayout(GVertexLayout);
 }
 
 void Defered::nullRender(ID3D11DeviceContext* devCon)
 {
+	devCon->GSSetShader(nullptr, nullptr, 0);
 	ID3D11RenderTargetView* temp[BufferC] = { NULL, NULL, NULL, NULL };
 	devCon->OMSetRenderTargets(BufferC, temp, nullptr);
 }
@@ -183,8 +191,8 @@ void Defered::nullRender(ID3D11DeviceContext* devCon)
 void Defered::setGBufferShaders(ID3D11DeviceContext* devCon)
 {
 	devCon->VSSetShader(GVertexShader, nullptr, 0);
+	devCon->GSSetShader(GGeomShader, nullptr, 0);
 	devCon->PSSetShader(GPixelShader, nullptr, 0);
-	devCon->IASetInputLayout(GVertexLayout);
 }
 
 void Defered::setBackBufferShaders(ID3D11DeviceContext* devCon)

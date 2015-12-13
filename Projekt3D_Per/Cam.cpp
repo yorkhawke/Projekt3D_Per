@@ -96,6 +96,13 @@ XMFLOAT4X4 Camera::GetViewXM()const
 	return View;
 }
 
+XMFLOAT3 Camera::getDir()
+{
+	XMFLOAT3 temp;
+	XMStoreFloat3(&temp, CamDir);
+	return temp;
+}
+
 XMFLOAT4X4 Camera::GetProjXM()const
 {
 	return Proj;

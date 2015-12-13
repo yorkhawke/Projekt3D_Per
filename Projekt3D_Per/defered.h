@@ -14,7 +14,7 @@ public:
 	void createBuffers(ID3D11DeviceContext* devCon, ID3D11Device* dev);
 	void clearBuffer(ID3D11DeviceContext *devCon);
 	//Shaders
-	void createShaders(ID3D11Device* dev, ID3D11DeviceContext *devCon);
+	void setLayout(ID3D11DeviceContext *devCon);
 	void setGBufferShaders(ID3D11DeviceContext* devCon);
 	void setBackBufferShaders(ID3D11DeviceContext* devCon);
 	void setShaderResources(ID3D11DeviceContext *devCon);
@@ -31,6 +31,7 @@ private:
 	//Final rendering pass
 	ID3D11VertexShader* DefVertexShader;
 	ID3D11PixelShader* DefPixelShader;
+	ID3D11GeometryShader* GGeomShader;
 	ID3D11InputLayout* DefVertexLayout;
 	ID3D11Texture2D* backB;
 	ID3D11RenderTargetView* BackBuff=0;
