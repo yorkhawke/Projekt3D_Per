@@ -71,6 +71,68 @@ void SSao::startUp(ID3D11Device* dev, ID3D11DeviceContext *devCon)
 
 	hr = dev->CreatePixelShader(pSSPS->GetBufferPointer(), pSSPS->GetBufferSize(), nullptr, &SSaoP);
 	pSSPS->Release();
+
+	D3D_SHADER_MACRO Gaus[3] = { {"_FIRST",NULL},{"_SECOND",NULL},{NULL,NULL} };
+
+	const D3D_SHADER_MACRO first[] =
+	{
+		{"_FIRST","0"},
+		{NULL,NULL }
+	};
+	//const D3D_SHADER_MACRO second[] =
+	//{
+	//	{"_SECOND",NULL},
+	//	{NULL,NULL }
+	//};
+
+	//GAUSSIAN FILTER
+	ID3DBlob* pCp = nullptr;
+	D3DCompileFromFile(L"ComputeShader.hlsl", first,NULL, "main", "cs_5_0", NULL, NULL, &pCp, nullptr);
+	hr = dev->CreateComputeShader(pCp->GetBufferPointer(), pCp->GetBufferSize(), nullptr, &SSaoCF);
+	pCp->Release();//How to know if this works?
+
+	ID3DBlob* pCp2 = nullptr;
+	D3DCompileFromFile(L"ComputeShader.hlsl", NULL, NULL, "main", "cs_5_0", NULL, NULL, &pCp2, nullptr);
+	hr = dev->CreateComputeShader(pCp2->GetBufferPointer(), pCp2->GetBufferSize(), nullptr, &SSaoCS);
+	pCp2->Release();
+	//should be its own class but noo time makes Per a bad boy!!!!
+	D3D11_TEXTURE2D_DESC gausDesc;
+
+	gausDesc.Width = ScreenWidth;
+	gausDesc.Height = ScreenHeight;
+	gausDesc.MipLevels = 1;
+	gausDesc.ArraySize = 1;
+	gausDesc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
+	gausDesc.SampleDesc.Count = 1;
+	gausDesc.SampleDesc.Quality = 0;
+	gausDesc.Usage = D3D11_USAGE_DEFAULT;
+	gausDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_UNORDERED_ACCESS;
+	gausDesc.CPUAccessFlags = 0;
+	gausDesc.MiscFlags = 0;
+
+	ID3D11Texture2D* GausTex;
+	hr = dev->CreateTexture2D(&gausDesc, 0, &GausTex);
+
+	D3D11_SHADER_RESOURCE_VIEW_DESC gST;
+
+	gST.Format = gausDesc.Format;
+	gST.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+	gST.Texture2D.MipLevels = 1;
+	gST.Texture2D.MostDetailedMip = 0;
+	
+	hr = dev->CreateShaderResourceView(GausTex, &gST, &CShaderTex);
+
+	D3D11_UNORDERED_ACCESS_VIEW_DESC UAVDesc;
+
+	UAVDesc.Format = gausDesc.Format;
+	UAVDesc.ViewDimension = D3D11_UAV_DIMENSION_TEXTURE2D;
+	UAVDesc.Texture2D.MipSlice = 0;
+
+	dev->CreateUnorderedAccessView(GausTex, &UAVDesc, &blur);
+
+	//GAUSSIAN FILTER
+
+	
 	//SSao pass
 
 	// SamplerState
@@ -210,7 +272,17 @@ void SSao::renderPass(ID3D11Device* dev, ID3D11DeviceContext *devCon, XMFLOAT4X4
 	ID3D11RenderTargetView* temp = { NULL };
 	devCon->OMSetRenderTargets(1, &temp, nullptr);
 
-
-	devCon->PSSetShaderResources(4, 1, &SSaoSRV);
+	//gauss run
+	devCon->CSSetShader(SSaoCF,nullptr,0);
+	devCon->CSSetUnorderedAccessViews(0,1,&blur,0);
+	//First run
+	devCon->CSSetShaderResources(4, 1, &SSaoSRV);
+	devCon->Dispatch(32, 32, 1);
+	//Second run and final 
+	devCon->CSSetShaderResources(4, 1, &CShaderTex);
+	devCon->CSSetShader(SSaoCS, nullptr, 0);
+	devCon->Dispatch(32, 32, 1);
+	//Drunk and wonderfull
+	devCon->PSSetShaderResources(4, 1, &CShaderTex);//fixa shadernbara
 }
 

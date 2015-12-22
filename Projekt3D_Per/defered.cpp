@@ -96,7 +96,6 @@ void Defered::StartUp(ID3D11Device* dev, ID3D11DeviceContext *devCon, IDXGISwapC
 
 	hr = dev->CreateVertexShader(pVS->GetBufferPointer(), pVS->GetBufferSize(), nullptr, &DefVertexShader);
 
-
 	//create input layout to VertexShader
 	D3D11_INPUT_ELEMENT_DESC inputDesc[] = {
 		{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 }

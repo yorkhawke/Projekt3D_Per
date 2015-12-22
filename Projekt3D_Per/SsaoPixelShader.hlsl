@@ -40,8 +40,6 @@ float main(in float4 screenPos : SV_Position) : SV_TARGET
 	float occlusion = 0;
 	float3 randomV = normalize(Rand.Sample(pointSampler, screenPos.x*screenPos.y).xyz);
 
-		// ssao här fixa in deaptz buff och sedan bara googog  //gör ssao i egen run kolla på 
-
 	for (int i = 0; i < 16; i++)
 	{
 		float3 ref = reflect(gRandomSphereVectors[i], randomV);
