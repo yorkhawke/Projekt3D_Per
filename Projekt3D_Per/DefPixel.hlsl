@@ -40,7 +40,7 @@ float4 main(in float4 screenPos : SV_Position) : SV_TARGET
 	float4 D = float4(0.0f, 0.0f, 0.0f, 0.0f);
 	float4 S = float4(0.0f, 0.0f, 0.0f, 0.0f);
 	float3 lightVector = normalize(SunPosition);
-
+	//return float4(Occ, Occ, Occ, 1.0f); //To check occlusion
 	A = materialAmbient*Ambient;
 	
 	float3 toEye = normalize(screenPos.xyz - Pos.xyz);

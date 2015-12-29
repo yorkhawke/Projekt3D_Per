@@ -82,7 +82,9 @@ void SSao::startUp(ID3D11Device* dev, ID3D11DeviceContext *devCon)
 
 	//GAUSSIAN FILTER
 	ID3DBlob* pCp = nullptr;
-	D3DCompileFromFile(L"ComputeShader.hlsl", first,NULL, "main", "cs_5_0", NULL, NULL, &pCp, nullptr);
+
+	D3DCompileFromFile(L"ComputeShader.hlsl", first,NULL, "main", "cs_5_0", D3DCOMPILE_DEBUG, NULL, &pCp, nullptr);
+
 	hr = dev->CreateComputeShader(pCp->GetBufferPointer(), pCp->GetBufferSize(), nullptr, &SSaoCF);
 	pCp->Release();//How to know if this works?
 
@@ -106,7 +108,9 @@ void SSao::startUp(ID3D11Device* dev, ID3D11DeviceContext *devCon)
 	gausDesc.MiscFlags = 0;
 
 	ID3D11Texture2D* GausTex;
+	ID3D11Texture2D* GausTex2;
 	hr = dev->CreateTexture2D(&gausDesc, 0, &GausTex);
+	hr = dev->CreateTexture2D(&gausDesc, 0, &GausTex2);
 
 	D3D11_SHADER_RESOURCE_VIEW_DESC gST;
 
@@ -116,6 +120,7 @@ void SSao::startUp(ID3D11Device* dev, ID3D11DeviceContext *devCon)
 	gST.Texture2D.MostDetailedMip = 0;
 	
 	hr = dev->CreateShaderResourceView(GausTex, &gST, &CShaderTex);
+	hr = dev->CreateShaderResourceView(GausTex2, &gST, &CShaderTex2);
 
 	D3D11_UNORDERED_ACCESS_VIEW_DESC UAVDesc;
 
@@ -124,6 +129,7 @@ void SSao::startUp(ID3D11Device* dev, ID3D11DeviceContext *devCon)
 	UAVDesc.Texture2D.MipSlice = 0;
 
 	dev->CreateUnorderedAccessView(GausTex, &UAVDesc, &blur);
+	dev->CreateUnorderedAccessView(GausTex2, &UAVDesc, &blur2);
 
 	//GAUSSIAN FILTER
 
@@ -265,20 +271,28 @@ void SSao::renderPass(ID3D11Device* dev, ID3D11DeviceContext *devCon, XMFLOAT4X4
 	devCon->Draw(4, 0);
 
 	ID3D11RenderTargetView* temp = { NULL };
+	ID3D11ShaderResourceView* temp1 = { NULL };
+	ID3D11UnorderedAccessView* temp2 = { NULL };
+
 	devCon->OMSetRenderTargets(1, &temp, nullptr);
 
-	devCon->PSSetShaderResources(4, 1,&SSaoSRV);//fixa shadernbara
-	////gauss run
-	//devCon->CSSetShader(SSaoCF,nullptr,0);
-	//devCon->CSSetUnorderedAccessViews(0,1,&blur,0);
-	////First run
-	//devCon->CSSetShaderResources(4, 1, &SSaoSRV);
-	//devCon->Dispatch(32, 32, 1);
-	////Second run and final 
-	//devCon->CSSetShaderResources(4, 1, &CShaderTex);
-	//devCon->CSSetShader(SSaoCS, nullptr, 0);
-	//devCon->Dispatch(32, 32, 1);
-	////Drunk and wonderfull
-	//devCon->PSSetShaderResources(4, 1, &CShaderTex);//fixa shadernbara
+	devCon->PSSetShaderResources(4, 1,&SSaoSRV);
+
+	devCon->CSSetShader(SSaoCF, nullptr, 0);
+	devCon->CSSetUnorderedAccessViews(0, 1, &blur, 0);
+	//First run
+	devCon->CSSetShaderResources(4, 1, &SSaoSRV);
+	devCon->Dispatch(ScreenWidth / 16, ScreenHeight, 1);
+
+	//Second run and final 
+	devCon->CSSetUnorderedAccessViews(0, 1, &blur2, 0);
+	devCon->CSSetShaderResources(4, 1, &CShaderTex);
+	devCon->CSSetShader(SSaoCS, nullptr, 0);
+	devCon->Dispatch(ScreenWidth, ScreenHeight / 16, 1);
+	devCon->CSSetShaderResources(4, 1, &temp1);
+	//Drunk and wonderfull
+	devCon->CSSetUnorderedAccessViews(0, 1, &temp2, 0);
+	devCon->PSSetShaderResources(4, 1, &CShaderTex);
+	
 }
 

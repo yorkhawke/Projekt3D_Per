@@ -17,7 +17,9 @@ private:
 	ID3D11ComputeShader* SSaoCF;
 	ID3D11ComputeShader* SSaoCS;
 	ID3D11UnorderedAccessView* blur;
+	ID3D11UnorderedAccessView* blur2;
 	ID3D11ShaderResourceView* CShaderTex;
+	ID3D11ShaderResourceView* CShaderTex2;
 
 	ID3D11ShaderResourceView* ShaderRandTex;
 	ID3D11RenderTargetView* SSaoRTV;
