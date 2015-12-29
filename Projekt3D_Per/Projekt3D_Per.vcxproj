@@ -88,6 +88,7 @@
     <ClCompile Include="MainLoop.cpp" />
     <ClCompile Include="Object.cpp" />
     <ClCompile Include="pch.cpp" />
+    <ClCompile Include="QuadTree.cpp" />
     <ClCompile Include="ShadowMap.cpp" />
     <ClCompile Include="Ssao.cpp" />
     <ClCompile Include="Time.cpp" />
@@ -108,6 +109,7 @@
     <ClInclude Include="Object.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="PlatformHelpers.h" />
+    <ClInclude Include="QuadTree.h" />
     <ClInclude Include="ShadowMap.h" />
     <ClInclude Include="Ssao.h" />
     <ClInclude Include="Time.h" />
