@@ -79,11 +79,6 @@ void SSao::startUp(ID3D11Device* dev, ID3D11DeviceContext *devCon)
 		{"_FIRST","0"},
 		{NULL,NULL }
 	};
-	//const D3D_SHADER_MACRO second[] =
-	//{
-	//	{"_SECOND",NULL},
-	//	{NULL,NULL }
-	//};
 
 	//GAUSSIAN FILTER
 	ID3DBlob* pCp = nullptr;
@@ -272,17 +267,18 @@ void SSao::renderPass(ID3D11Device* dev, ID3D11DeviceContext *devCon, XMFLOAT4X4
 	ID3D11RenderTargetView* temp = { NULL };
 	devCon->OMSetRenderTargets(1, &temp, nullptr);
 
-	//gauss run
-	devCon->CSSetShader(SSaoCF,nullptr,0);
-	devCon->CSSetUnorderedAccessViews(0,1,&blur,0);
-	//First run
-	devCon->CSSetShaderResources(4, 1, &SSaoSRV);
-	devCon->Dispatch(32, 32, 1);
-	//Second run and final 
-	devCon->CSSetShaderResources(4, 1, &CShaderTex);
-	devCon->CSSetShader(SSaoCS, nullptr, 0);
-	devCon->Dispatch(32, 32, 1);
-	//Drunk and wonderfull
-	devCon->PSSetShaderResources(4, 1, &CShaderTex);//fixa shadernbara
+	devCon->PSSetShaderResources(4, 1,&SSaoSRV);//fixa shadernbara
+	////gauss run
+	//devCon->CSSetShader(SSaoCF,nullptr,0);
+	//devCon->CSSetUnorderedAccessViews(0,1,&blur,0);
+	////First run
+	//devCon->CSSetShaderResources(4, 1, &SSaoSRV);
+	//devCon->Dispatch(32, 32, 1);
+	////Second run and final 
+	//devCon->CSSetShaderResources(4, 1, &CShaderTex);
+	//devCon->CSSetShader(SSaoCS, nullptr, 0);
+	//devCon->Dispatch(32, 32, 1);
+	////Drunk and wonderfull
+	//devCon->PSSetShaderResources(4, 1, &CShaderTex);//fixa shadernbara
 }
 

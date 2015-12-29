@@ -151,7 +151,6 @@
     <FxCompile Include="GeometryShader.hlsl">
       <Filter>Resource Files</Filter>
     </FxCompile>
-    <FxCompile Include="GaussianFilterSsao.hlsl" />
     <FxCompile Include="ComputeShader.hlsl">
       <Filter>Resource Files</Filter>
     </FxCompile>

@@ -65,8 +65,8 @@ void main(uint3 DTid : SV_DispatchThreadID)
 		result += input[int2(DTid.x + i, DTid.y)] * (gausCalc(DTid.x + i) / GaNo);
 	}
 	output[DTid.xy] = result;
-
-
+	output[DTid.xy] = 0.0f;
+	return;
 }
 #else
 
@@ -86,6 +86,8 @@ void main(uint3 DTid : SV_DispatchThreadID)
 		result += input[int2(DTid.x, DTid.y + i)] * (gausCalc(DTid.y + i) / GaNo);
 	}
 	output[DTid.xy] = result;
+	output[DTid.xy] = 0.0f;
+	return;
 }
 #endif
 //Prolly Works if i only use hardcoded weight cuz i think they are going to be the same allaround.... 
