@@ -49,9 +49,11 @@ void QuadTree::Initialzie(UINT* Ind, int NrIn, ID3D11Device* Device)
 		Children[3].Initialzie(temp4, NrIn / 4, Device);
 		NrFrustDetail++;
 	}
-	else (NrFrustDetail == 5)
+	else if(NrFrustDetail == 5)
 	{
-		
+		XMVECTOR test1 = {0,0,0}; //
+		XMVECTOR test2 = {}
+		box.CreateFromPoints();
 	}
 	else
 	{
