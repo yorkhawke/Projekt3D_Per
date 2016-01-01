@@ -177,7 +177,7 @@ void LandObject::CreateMap(int width, int height, UINT m, UINT n, ID3D11Device* 
 
 	Vertices = new Vertex[nrVertrices];
 
-	Indices(m, n);
+ 	Indices(m, n);
 
 	Entity::createTexture(device, devCont,L"grasscock.png");
 

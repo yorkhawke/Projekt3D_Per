@@ -21,7 +21,7 @@
 #include "WICTextureLoader.h"
 
 //Globals
-
+static int NrFrustDetail;
 const int BufferC = 4;
 
 const int ScreenHeight = 800;

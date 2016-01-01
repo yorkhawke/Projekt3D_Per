@@ -6,14 +6,21 @@
 class QuadTree
 {
 private:
-	UINT* Indices;
+	UINT* indices; //Indices array
+	int nrIndices;// number of indices
+	bool render = true;
 	QuadTree* Children;//mah Chiledreren
+	ID3D11Buffer* IndexB;
 
 public:
-	void Init(ID3D11Device* Device);
+	QuadTree();
+	~QuadTree();
+	void Initialzie(UINT* Ind, int NrIn, ID3D11Device* Device);
 	void Render(ID3D11DeviceContext* DeviceContext);
-	bool CheckFrustum(Camera Cam);
+	bool CheckFrustum();
 
+protected:
+	BoundingBox box;
 };
 
 #endif
