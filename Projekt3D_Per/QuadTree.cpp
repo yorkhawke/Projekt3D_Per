@@ -51,9 +51,9 @@ void QuadTree::Initialzie(UINT* Ind, int NrIn, ID3D11Device* Device)
 	}
 	else if(NrFrustDetail == 5)
 	{
-		XMVECTOR test1 = {0,0,0}; //
-		XMVECTOR test2 = {}
-		box.CreateFromPoints();
+		//XMVECTOR test1 = {0,0,0}; //
+		//XMVECTOR test2 = {}
+		//box.CreateFromPoints();
 	}
 	else
 	{
@@ -89,5 +89,5 @@ void QuadTree::Render(ID3D11DeviceContext* DeviceContext)
 
 bool QuadTree::CheckFrustum()
 {
-	
+	return true;
 }
