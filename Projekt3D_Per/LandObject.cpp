@@ -12,14 +12,14 @@ LandObject::~LandObject()
 float LandObject::getMapHeight(float x, float z)
 {
 
-	int px = x + 150;
-	int pz = -z + 150;
+	int px = x + 128;
+	int pz = -z + 128;
 
 	if (pz <= 0 || px <= 0)
 	{
 		return 0;
 	}
-	else if (pz >= 300 || px >= 300)
+	else if (pz >= 256 || px >= 256)
 	{
 		return 0;
 	}
@@ -70,7 +70,7 @@ float LandObject::averageH(int i, int j)
 	{
 		for (int n = j - 1; n <= j + 1; n++)
 		{
-			if (m >= 0 && m < 300 && n >= 0 && n < 300)// 300 size of the map
+			if (m >= 0 && m < 256 && n >= 0 && n < 256)// 256 size of the map
 			{
 				avg += HeightMap[m][n];// fan ta i och j 
 				nr += 1.0f;
@@ -84,14 +84,14 @@ float LandObject::averageH(int i, int j)
 
 float LandObject::HMap(float x, float z)
 {
-	int px = x + 150;
-	int pz = -z + 150;
+	int px = x + 128;
+	int pz = -z + 128;
 
 	if (pz <= 0 || px <= 0)
 	{
 		return 0;
 	}
-	else if (pz >= 300 || px >= 300)
+	else if (pz >= 256 || px >= 256)
 	{
 		return 0;
 	}
@@ -181,7 +181,7 @@ void LandObject::CreateMap(int width, int height, UINT m, UINT n, ID3D11Device* 
 
 	Entity::createTexture(device, devCont,L"grasscock.png");
 
-	HMap(m, n, "fdasfdas.raw", 0.5f, 0);
+	HMap(m, n, "HeightMap.raw", 0.5f, 0);
 
 	for (int i = 0; i < m; i++)
 	{
@@ -252,12 +252,12 @@ void LandObject::CreateMap(int width, int height, UINT m, UINT n, ID3D11Device* 
 	hr = device->CreateBuffer(&IndexBufferDesc, &Indexdata, &IndexB);
 }
 
-void LandObject::renderFrustCull(ID3D11DeviceContext* devCont)
+void LandObject::renderFrustCull(ID3D11DeviceContext* devCont, const XMMATRIX &projection)
 {
-
+	frustCull.Render(devCont,projection);
 }
 
-void LandObject::setupFrust(UINT m, UINT n,ID3D11Device* device, XMMATRIX projection)
+void LandObject::setupFrust(UINT m, UINT n,ID3D11Device* device, const XMMATRIX &projection)
 {
-	frustCull.Initialzie(indices, nrIndexes, device, m, n, Vertices, projection);
+	frustCull.Initialzie(projection,indices, nrIndexes, device, m, n, Vertices);
 }

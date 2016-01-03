@@ -92,8 +92,8 @@ void GameSystem::StartGame(float gametime, float fps,HINSTANCE hinstance)
 	//CreateBuffer
 	CreateBuffers();
 
-	hMap.CreateMap(300,300,300,300,device,deviceContext);
-
+	hMap.CreateMap(256,256,256,256,device,deviceContext);
+	hMap.setupFrust(256, 256, device, cam.GetProjMa());
 	obj.LoadObjFile(L"skull.obj");
 	obj.createTexture(device, deviceContext, L"teapot.png");
 	obj.createbuff(device);
@@ -274,7 +274,8 @@ void GameSystem::Render()
 	deviceContext->VSSetConstantBuffers(1, 1, &SunBuffer);
 	shadow.prepRun(deviceContext);
 
-	hMap.render(deviceContext); 
+	hMap.renderFrustCull(deviceContext, XMMatrixMultiply(cam.GetViewMa(), cam.GetProjMa()));
+	//hMap.render(deviceContext); 
 	obj.render(deviceContext);
 
 	shadow.close(deviceContext);
@@ -288,8 +289,8 @@ void GameSystem::Render()
 
 	deviceContext->VSSetConstantBuffers(0, 1, &MatrixBuffer);
 	//draw obj
-
-	hMap.render(deviceContext);
+	hMap.renderFrustCull(deviceContext,XMMatrixMultiply(cam.GetViewMa(),cam.GetProjMa()));
+	//hMap.render(deviceContext);
 	obj.render(deviceContext);
 
 	DeferedRendering.nullRender(deviceContext);

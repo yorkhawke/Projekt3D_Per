@@ -10,11 +10,15 @@ QuadTree::~QuadTree()
 
 }
 
-void QuadTree::Initialzie(UINT* Ind, int NrIn, ID3D11Device* Device, UINT m, UINT n, Vertex* vertex,XMMATRIX proj)
+void QuadTree::Initialzie(const XMMATRIX &projection,UINT* Ind, int NrIn, ID3D11Device* Device, UINT m, UINT n, Vertex* vertex)
 {
 	indices = Ind;
 	nrIndices = NrIn;
 	vertexs = vertex;
+	XMFLOAT3* tempVertex = new XMFLOAT3[m*n];
+
+	if (NrFrustDetail < 5)
+	{
 	UINT* temp1 = new UINT[NrIn / 4];
 	UINT* temp2 = new UINT[NrIn / 4];
 	UINT* temp3 = new UINT[NrIn / 4];
@@ -24,11 +28,8 @@ void QuadTree::Initialzie(UINT* Ind, int NrIn, ID3D11Device* Device, UINT m, UIN
 	Vertex* Vtemp2 = new Vertex[m*n / 4];
 	Vertex* Vtemp3 = new Vertex[m*n / 4];
 	Vertex* Vtemp4 = new Vertex[m*n / 4];
-	XMFLOAT3* tempVertex = new XMFLOAT3[m*n];
-	Children = new QuadTree[4];
-	if (NrFrustDetail < 5)
-	{
 
+	Children = new QuadTree[4];
 		for (int i = 0; i < NrIn; i++)
 		{
 
@@ -63,12 +64,12 @@ void QuadTree::Initialzie(UINT* Ind, int NrIn, ID3D11Device* Device, UINT m, UIN
 			}
 		}
 
-
-		Children[0].Initialzie(temp1, NrIn / 4, Device, m / 2, n / 2, vertex,proj);
-		Children[1].Initialzie(temp2, NrIn / 4, Device, m / 2, n / 2, vertex, proj);
-		Children[2].Initialzie(temp3, NrIn / 4, Device, m / 2, n / 2, vertex, proj);
-		Children[3].Initialzie(temp4, NrIn / 4, Device, m / 2, n / 2, vertex, proj);
 		NrFrustDetail++;
+		Children[0].Initialzie(projection,temp1, NrIn / 4, Device, m / 2, n / 2, vertex);
+		Children[1].Initialzie(projection, temp2, NrIn / 4, Device, m / 2, n / 2, vertex);
+		Children[2].Initialzie(projection, temp3, NrIn / 4, Device, m / 2, n / 2, vertex);
+		Children[3].Initialzie(projection, temp4, NrIn / 4, Device, m / 2, n / 2, vertex);
+
 	}
 
 		// indexBuffer
@@ -103,37 +104,38 @@ void QuadTree::Initialzie(UINT* Ind, int NrIn, ID3D11Device* Device, UINT m, UIN
 		//Bounding box
 		BoundingBox test;
 		box.CreateFromPoints(box,m*n,tempVertex,sizeof(XMFLOAT3));
-		frust.CreateFromMatrix(frust, proj);
-
+		frust.CreateFromMatrix(frust, projection);
 }
 
-void QuadTree::Render(ID3D11DeviceContext* DeviceContext)
+void QuadTree::Render(ID3D11DeviceContext* DeviceContext, const XMMATRIX &projection)
 {
-	if (CheckFrustum())
+	frust.CreateFromMatrix(frust, projection);
+	int testValue = CheckFrustum();
+	switch (testValue)
 	{
+	case 0:
+		break;
+	case 1:
 		for (int i = 0; i < 4; i++)
 		{
-			Children[i].Render(DeviceContext);//need to render only the children.... then end this shit
+			Children[i].Render(DeviceContext,projection);
 		}
+		break;
+	case 2:
+		UINT32 vertexSize = sizeof(Vertex);
+		UINT32 offset = 0;
 
+		DeviceContext->IASetIndexBuffer(IndexB, DXGI_FORMAT_R32_UINT, 0);
+
+		DeviceContext->IASetVertexBuffers(0, 1, &VertexB, &vertexSize, &offset);
+		DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+		DeviceContext->DrawIndexed(nrIndices, 0, 0);
+		break;
 	}
-	else
-	{
-		return;
-	}
-
-	UINT32 vertexSize = sizeof(Vertex);
-	UINT32 offset = 0;
-
-	DeviceContext->IASetIndexBuffer(IndexB, DXGI_FORMAT_R32_UINT, 0);
-
-	DeviceContext->IASetVertexBuffers(0, 1, &VertexB, &vertexSize, &offset);
-	DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-
-	DeviceContext->DrawIndexed(nrIndices, 0, 0);
 }
 
-bool QuadTree::CheckFrustum()
+int QuadTree::CheckFrustum()
 {
-	return true;
+	return frust.Contains(box);
 }

@@ -16,9 +16,9 @@ private:
 public:
 	QuadTree();
 	~QuadTree();
-	void Initialzie(UINT* Ind, int NrIn, ID3D11Device* Device, UINT m, UINT n, Vertex* vertex, XMMATRIX proj);
-	void Render(ID3D11DeviceContext* DeviceContext);
-	bool CheckFrustum();
+	void Initialzie(const XMMATRIX &projection,UINT* Ind, int NrIn, ID3D11Device* Device, UINT m, UINT n, Vertex* vertex);
+	void Render(ID3D11DeviceContext* DeviceContext, const XMMATRIX &projection);
+	int CheckFrustum();
 
 protected:
 	BoundingBox box;
