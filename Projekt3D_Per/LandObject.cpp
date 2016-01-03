@@ -257,7 +257,7 @@ void LandObject::renderFrustCull(ID3D11DeviceContext* devCont, const XMMATRIX &p
 	frustCull.Render(devCont,projection);
 }
 
-void LandObject::setupFrust(UINT m, UINT n,ID3D11Device* device, const XMMATRIX &projection)
+void LandObject::setupFrust(UINT m, UINT n,ID3D11Device* device, const XMMATRIX &projection, XMMATRIX &WorldM)
 {
-	frustCull.Initialzie(projection,indices, nrIndexes, device, m, n, Vertices);
+	frustCull.Initialzie(projection,indices, nrIndexes, device, m, n, Vertices,WorldM);
 }

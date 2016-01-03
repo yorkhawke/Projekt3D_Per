@@ -18,7 +18,7 @@ public:
 	void Indices(int m, int n);
 	float HMap(float x, float z);
 	void renderFrustCull(ID3D11DeviceContext* devCont, const XMMATRIX &projection);
-	void setupFrust(UINT m, UINT n, ID3D11Device* device, const XMMATRIX &projection);
+	void setupFrust(UINT m, UINT n, ID3D11Device* device, const XMMATRIX &projection, XMMATRIX &WorldM);
 protected:
 	float** HeightMap;
 	QuadTree frustCull;
