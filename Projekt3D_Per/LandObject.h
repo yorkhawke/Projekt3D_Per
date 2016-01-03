@@ -2,6 +2,7 @@
 #define LANDOBJECT_H
 
 #include "Object.h"
+#include "QuadTree.h"
 
 class LandObject : public Entity
 {
@@ -16,10 +17,11 @@ public:
 	void CreateMap(int width, int height, UINT m, UINT n, ID3D11Device* device, ID3D11DeviceContext* devCont);
 	void Indices(int m, int n);
 	float HMap(float x, float z);
-
+	void renderFrustCull(ID3D11DeviceContext* devCont);
+	void setupFrust(UINT m, UINT n, ID3D11Device* device, XMMATRIX projection);
 protected:
 	float** HeightMap;
-
+	QuadTree frustCull;
 	int faceCount;
 };
 #endif

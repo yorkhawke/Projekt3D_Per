@@ -19,6 +19,7 @@
 #include <fstream>
 #include "pch.h"
 #include "WICTextureLoader.h"
+#include <DirectXCollision.h>
 
 //Globals
 static int NrFrustDetail;
@@ -51,6 +52,13 @@ struct Matrix
 struct PixelMatrix
 {
 	XMFLOAT4X4 inVp;
+};
+
+struct Vertex
+{
+	XMFLOAT3 Position;
+	XMFLOAT3 Normal;
+	XMFLOAT2 Texture;
 };
 
 #endif

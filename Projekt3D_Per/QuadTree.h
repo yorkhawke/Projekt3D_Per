@@ -11,16 +11,18 @@ private:
 	bool render = true;
 	QuadTree* Children;//mah Chiledreren
 	ID3D11Buffer* IndexB;
-
+	ID3D11Buffer* VertexB;
+	Vertex* vertexs;
 public:
 	QuadTree();
 	~QuadTree();
-	void Initialzie(UINT* Ind, int NrIn, ID3D11Device* Device);
+	void Initialzie(UINT* Ind, int NrIn, ID3D11Device* Device, UINT m, UINT n, Vertex* vertex, XMMATRIX proj);
 	void Render(ID3D11DeviceContext* DeviceContext);
 	bool CheckFrustum();
 
 protected:
 	BoundingBox box;
+	BoundingFrustum frust;
 };
 
 #endif

@@ -251,3 +251,13 @@ void LandObject::CreateMap(int width, int height, UINT m, UINT n, ID3D11Device* 
 	Indexdata.pSysMem = indices;
 	hr = device->CreateBuffer(&IndexBufferDesc, &Indexdata, &IndexB);
 }
+
+void LandObject::renderFrustCull(ID3D11DeviceContext* devCont)
+{
+
+}
+
+void LandObject::setupFrust(UINT m, UINT n,ID3D11Device* device, XMMATRIX projection)
+{
+	frustCull.Initialzie(indices, nrIndexes, device, m, n, Vertices, projection);
+}
