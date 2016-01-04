@@ -93,10 +93,7 @@ void GameSystem::StartGame(float gametime, float fps,HINSTANCE hinstance)
 	CreateBuffers();
 
 	hMap.CreateMap(256,256,256,256,device,deviceContext);
-	XMMATRIX temp;
-	temp = XMMatrixMultiply(cam.GetViewMa(), cam.GetProjMa());
-	temp = XMMatrixMultiply(temp, XMLoadFloat4x4(&matrix.World));
-	hMap.setupFrust(256, 256, device, temp,XMLoadFloat4x4(&matrix.World));
+	hMap.setupFrust(256, 256, device);
 	obj.LoadObjFile(L"skull.obj");
 	obj.createTexture(device, deviceContext, L"teapot.png");
 	obj.createbuff(device);
@@ -271,15 +268,14 @@ void GameSystem::Render()
 	deviceContext->Unmap(GeomBuff, 0);
 	//--------------UPDATING MATRIXES-----------------------------
 	//Shadow
-	XMMATRIX tempTest;
-	tempTest = XMMatrixMultiply(cam.GetViewMa(), cam.GetProjMa());
-	tempTest = XMMatrixMultiply(tempTest, XMLoadFloat4x4(&matrix.World));
+	XMMATRIX tesmp = XMLoadFloat4x4(&matrix.World);
+
 	DeferedRendering.setLayout(deviceContext);
 
 	deviceContext->VSSetConstantBuffers(1, 1, &SunBuffer);
 	shadow.prepRun(deviceContext);
 
-	hMap.renderFrustCull(deviceContext, tempTest);
+	hMap.renderFrustCull(deviceContext, cam.GetProjMa(),cam.GetViewMa(),tesmp);
 	//hMap.render(deviceContext); 
 	obj.render(deviceContext);
 
@@ -294,7 +290,7 @@ void GameSystem::Render()
 
 	deviceContext->VSSetConstantBuffers(0, 1, &MatrixBuffer);
 	//draw obj
-	hMap.renderFrustCull(deviceContext, tempTest);
+	hMap.renderFrustCull(deviceContext, cam.GetProjMa(), cam.GetViewMa(), tesmp);
 	//hMap.render(deviceContext);
 	obj.render(deviceContext);
 

@@ -10,23 +10,16 @@ QuadTree::~QuadTree()
 
 }
 
-void QuadTree::Initialzie(const XMMATRIX &projection,UINT* Ind, int NrIn, ID3D11Device* Device, UINT m, UINT n, Vertex* vertex,XMMATRIX &WorldM)
+void QuadTree::Initialzie(UINT* Ind, int NrIn, ID3D11Device* Device, UINT m, UINT n, Vertex* vertex,int layer,int ext,XMFLOAT3 Center)
 {
-	indices = Ind;
-	nrIndices = NrIn;
+	//indices = Ind;
+	//nrIndices = NrIn;
 	vertexs = vertex;
 	nrVertexes = m*n;
-	XMFLOAT3* tempVertex = new XMFLOAT3[nrVertexes];//funkar nog itne :(
-
-	if (NrFrustDetail == 5)
-		leaf = true;
-
-	if (NrFrustDetail < 5)
-	{
-	UINT* temp1 = new UINT[NrIn / 4];
-	UINT* temp2 = new UINT[NrIn / 4];
-	UINT* temp3 = new UINT[NrIn / 4];
-	UINT* temp4 = new UINT[NrIn / 4];
+	//UINT* temp1 = new UINT[NrIn / 4];
+	//UINT* temp2 = new UINT[NrIn / 4];
+	//UINT* temp3 = new UINT[NrIn / 4];
+	//UINT* temp4 = new UINT[NrIn / 4];
 
 	Vertex* Vtemp1 = new Vertex[m*n / 4];
 	Vertex* Vtemp2 = new Vertex[m*n / 4];
@@ -34,94 +27,167 @@ void QuadTree::Initialzie(const XMMATRIX &projection,UINT* Ind, int NrIn, ID3D11
 	Vertex* Vtemp4 = new Vertex[m*n / 4];
 
 	Children = new QuadTree[4];
-		for (int i = 0; i < NrIn; i++)
-		{
 
-		}
+	//VERTEXES
 
-		//VERTEXES
-	
-
-		for (int i = 0; i < m; i++)
-		{
-			for (int j = 0; j < n; j++)
-			{
-				if (i < m/2)
-				{
-					if (j < n/2)
-						Vtemp1[j] = vertex[j*i];
-	
-					else
-						Vtemp2[j] = vertex[j*i];
+	//  ___________________   ^
+	// |         |         |  |
+	// |    A    |    B    |  |
+	// |         |         |  |
+	// |---------|---------|  m
+	// |         |         |  |
+	// |    C    |    D    |  |
+	// |_________|_________|  v
+	// <---------n--------->
 
 
-				}
-				else
-				{
-					if (j < n / 2)
-						Vtemp3[j] = vertex[j*i];
-
-					else
-						Vtemp4[j] = vertex[j*i];
-				}
-			}
-		}
-
-		NrFrustDetail++;
-		Children[0].Initialzie(projection,temp1, NrIn / 4, Device, m / 2, n / 2, vertex,WorldM);
-		Children[1].Initialzie(projection, temp2, NrIn / 4, Device, m / 2, n / 2, vertex, WorldM);
-		Children[2].Initialzie(projection, temp3, NrIn / 4, Device, m / 2, n / 2, vertex, WorldM);
-		Children[3].Initialzie(projection, temp4, NrIn / 4, Device, m / 2, n / 2, vertex, WorldM);
-
-	}
-
-	for (int i = 0;i < m*n;i++)
+	// A
+	int added = 0;
+	for (int i = 0; i < m / 2; ++i)
 	{
-		XMStoreFloat3(&tempVertex[i],XMVector3Transform(XMLoadFloat3(&vertex[i].Position),WorldM));
+		for (int j = 0; j < n / 2; ++j)
+		{
+			Vtemp1[added++] = vertex[i * m + j];
+		}
 	}
 
-		// indexBuffer
-		D3D11_BUFFER_DESC IndexBufferDesc;
-		IndexBufferDesc.Usage = D3D11_USAGE_DEFAULT;
-		IndexBufferDesc.ByteWidth = (6 * (m - 1)*(n - 1) * 4)+4;//+4 buffer //because there will be atleast one that gets a faulty value by about 4 bytes..
-		IndexBufferDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
-		IndexBufferDesc.CPUAccessFlags = 0;
-		IndexBufferDesc.MiscFlags = 0;
-		IndexBufferDesc.StructureByteStride = 0;
-		D3D11_SUBRESOURCE_DATA Indexdata;
-		Indexdata.pSysMem = indices;
-		Device->CreateBuffer(&IndexBufferDesc, &Indexdata, &IndexB);
+	// B
+	added = 0;
+	for (int i = 0; i < m / 2; ++i)
+	{
+		for (int j = n / 2; j < n; ++j)
+		{
+			Vtemp2[added++] = vertex[i * m + j];
+		}
+	}
 
-		D3D11_BUFFER_DESC vbdesc;
+	// C
+	added = 0;
+	for (int i = m / 2; i < m; ++i)
+	{
+		for (int j = 0; j < n / 2; ++j)
+		{
+			Vtemp3[added++] = vertex[i * m + j];
+		}
+	}
 
-		ZeroMemory(&vbdesc, sizeof(vbdesc));
+	// D
+	added = 0;
+	for (int i = m / 2; i < m; ++i)
+	{
+		for (int j = n / 2; j < n; ++j)
+		{
+			Vtemp4[added++] = vertex[i * m + j];
+		}
+	}
 
-		vbdesc.Usage = D3D11_USAGE_DEFAULT;
-		vbdesc.ByteWidth = sizeof(Vertex)*m*n;
-		vbdesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-		vbdesc.CPUAccessFlags = 0;
-		vbdesc.MiscFlags = 0;
-		vbdesc.StructureByteStride = 0;
+	int faceCount = (m / 2 - 1)*(n / 2 - 1) * 2;
+	nrIndices = faceCount * 3;
+	int k = 0;
+	indices = new UINT[nrIndices];
 
-		D3D11_SUBRESOURCE_DATA Data;
-		ZeroMemory(&Data, sizeof(Data));
-		Data.pSysMem = vertexs;
+	for (int i = 0; i < m / 2 - 1; i++)
+	{
+		for (int j = 0; j < n / 2 - 1; j++)
+		{
+			indices[k] = i*(n / 2) + j;
+			indices[k + 1] = i*(n / 2) + j + 1;
+			indices[k + 2] = (i + 1)*(n / 2) + j;
+			indices[k + 3] = (i + 1)*(n / 2) + j;
+			indices[k + 4] = i*(n / 2) + j + 1;
+			indices[k + 5] = (i + 1)*(n / 2) + j + 1;
+			k += 6;
+		}
+	}
 
-		Device->CreateBuffer(&vbdesc, &Data, &VertexB);
+	if (layer!=0)
+	{
 
-		//Bounding box
-		BoundingBox test;
-		box.CreateFromPoints(box,m*n,tempVertex,sizeof(XMFLOAT3));
+		Children[0].Initialzie(indices, nrIndices, Device, m / 2, n / 2, Vtemp1, layer - 1, ext / 2, XMFLOAT3(Center.x - ext / 2, 0.0, Center.y + ext / 2));
+		Children[1].Initialzie(indices, nrIndices, Device, m / 2, n / 2, Vtemp2, layer - 1, ext / 2, XMFLOAT3(Center.x + ext / 2, 0.0, Center.y + ext / 2));
+		Children[2].Initialzie(indices, nrIndices, Device, m / 2, n / 2, Vtemp3, layer - 1, ext / 2, XMFLOAT3(Center.x - ext / 2, 0.0, Center.y - ext / 2));
+		Children[3].Initialzie(indices, nrIndices, Device, m / 2, n / 2, Vtemp4, layer - 1, ext / 2, XMFLOAT3(Center.x - ext / 2, 0.0, Center.y - ext / 2));
+	}
+	else
+	{
+		leaf = true;
+		delete[] indices;
+		indices = Ind;
+		nrIndices = NrIn;
+	}
+
+	// indexBuffer
+	D3D11_BUFFER_DESC IndexBufferDesc;
+	IndexBufferDesc.Usage = D3D11_USAGE_DEFAULT;
+	IndexBufferDesc.ByteWidth = nrIndices*sizeof(UINT);
+	IndexBufferDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
+	IndexBufferDesc.CPUAccessFlags = 0;
+	IndexBufferDesc.MiscFlags = 0;
+	IndexBufferDesc.StructureByteStride = 0;
+
+	D3D11_SUBRESOURCE_DATA Indexdata;
+	Indexdata.pSysMem = indices;
+	Device->CreateBuffer(&IndexBufferDesc, &Indexdata, &IndexB);
+
+	D3D11_BUFFER_DESC vbdesc;
+
+	ZeroMemory(&vbdesc, sizeof(vbdesc));
+
+	vbdesc.Usage = D3D11_USAGE_DEFAULT;
+	vbdesc.ByteWidth = sizeof(Vertex)*m*n;
+	vbdesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+	vbdesc.CPUAccessFlags = 0;
+	vbdesc.MiscFlags = 0;
+	vbdesc.StructureByteStride = 0;
+
+	D3D11_SUBRESOURCE_DATA Data;
+	ZeroMemory(&Data, sizeof(Data));
+	Data.pSysMem = vertexs;
+
+	Device->CreateBuffer(&vbdesc, &Data, &VertexB);
+
+	//Bounding box
+	XMVECTOR p1 = XMVectorSet(Center.x + ext, Center.y + ext, Center.z + ext, 1.0);
+	XMVECTOR p2 = XMVectorSet(Center.x - ext, Center.y - ext, Center.z - ext, 1.0);
+	box.CreateFromPoints(box, p1, p2);
 
 }
 
-void QuadTree::Render(ID3D11DeviceContext* DeviceContext, const XMMATRIX &projection)
+void QuadTree::Render(ID3D11DeviceContext* DeviceContext, const XMMATRIX &projection, const XMMATRIX &view, const XMMATRIX &World)
 {
-
+	//Frust på Projection sen multiplicera med inverse proj inverse view iverse world.
 	BoundingFrustum frust;//göra om frustumet till worldspace för boxarna...
 
 	frust.CreateFromMatrix(frust, projection);
+	frust.Transform(frust, XMMatrixInverse(nullptr, view));//FUNKAR TESTAT!
+
+	//BoundingFrustum test;
+	//test = frust;
+	//test.Transform(test, XMMatrixInverse(nullptr, World));
+
+	//if (leaf) // TEST
+	//{
+	//	UINT32 vertexSize = sizeof(Vertex);
+	//	UINT32 offset = 0;
+
+	//	DeviceContext->IASetIndexBuffer(IndexB, DXGI_FORMAT_R32_UINT, 0);
+
+	//	DeviceContext->IASetVertexBuffers(0, 1, &VertexB, &vertexSize, &offset);
+	//	DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	//	//DeviceContext->Draw(nrVertexes, 0);
+	//	DeviceContext->DrawIndexed(nrIndices, 0, 0);
+	//}
+	//else
+	//{
+	//	for (int i = 0; i < 4; i++)
+	//	{
+	//		Children[i].Render(DeviceContext, projection, view, World);
+	//	}
+	//}
+
 	int testValue = frust.Contains(box);
+	//Nått fel med frustum culling
+	
 	switch (testValue)
 	{
 	case 0:
@@ -131,7 +197,7 @@ void QuadTree::Render(ID3D11DeviceContext* DeviceContext, const XMMATRIX &projec
 		{
 			for (int i = 0; i < 4; i++)
 			{
-				Children[i].Render(DeviceContext, projection);
+				Children[i].Render(DeviceContext, projection,view,World);
 			}
 		}
 		else
@@ -143,7 +209,7 @@ void QuadTree::Render(ID3D11DeviceContext* DeviceContext, const XMMATRIX &projec
 
 			DeviceContext->IASetVertexBuffers(0, 1, &VertexB, &vertexSize, &offset);
 			DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-
+			//DeviceContext->Draw(nrVertexes, 0);
 			DeviceContext->DrawIndexed(nrIndices, 0, 0);
 		}
 		break;
@@ -155,19 +221,20 @@ void QuadTree::Render(ID3D11DeviceContext* DeviceContext, const XMMATRIX &projec
 
 		DeviceContext->IASetVertexBuffers(0, 1, &VertexB, &vertexSize, &offset);
 		DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-
+		//DeviceContext->Draw(nrVertexes, 0);
 		DeviceContext->DrawIndexed(nrIndices, 0, 0);
 		break;
 	}
 	//just to se if it renders...
-	UINT32 vertexSize = sizeof(Vertex);
-	UINT32 offset = 0;
 
-	DeviceContext->IASetIndexBuffer(IndexB, DXGI_FORMAT_R32_UINT, 0);
+	//UINT32 vertexSize = sizeof(Vertex);
+	//UINT32 offset = 0;
 
-	DeviceContext->IASetVertexBuffers(0, 1, &VertexB, &vertexSize, &offset);
-	DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	//DeviceContext->IASetIndexBuffer(IndexB, DXGI_FORMAT_R32_UINT, 0);
 
-	DeviceContext->DrawIndexed(nrIndices,0, 0);
+	//DeviceContext->IASetVertexBuffers(0, 1, &VertexB, &vertexSize, &offset);
+	//DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+	//DeviceContext->DrawIndexed(nrIndices,0, 0);
 }
 
