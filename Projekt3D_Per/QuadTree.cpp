@@ -103,10 +103,10 @@ void QuadTree::Initialzie(UINT* Ind, int NrIn, ID3D11Device* Device, UINT m, UIN
 	if (layer!=0)
 	{
 
-		Children[0].Initialzie(indices, nrIndices, Device, m / 2, n / 2, Vtemp1, layer - 1, ext / 2, XMFLOAT3(Center.x - ext / 2, 0.0, Center.y + ext / 2));
-		Children[1].Initialzie(indices, nrIndices, Device, m / 2, n / 2, Vtemp2, layer - 1, ext / 2, XMFLOAT3(Center.x + ext / 2, 0.0, Center.y + ext / 2));
-		Children[2].Initialzie(indices, nrIndices, Device, m / 2, n / 2, Vtemp3, layer - 1, ext / 2, XMFLOAT3(Center.x - ext / 2, 0.0, Center.y - ext / 2));
-		Children[3].Initialzie(indices, nrIndices, Device, m / 2, n / 2, Vtemp4, layer - 1, ext / 2, XMFLOAT3(Center.x - ext / 2, 0.0, Center.y - ext / 2));
+		Children[0].Initialzie(indices, nrIndices, Device, m / 2, n / 2, Vtemp1, layer - 1, ext / 2, XMFLOAT3(Center.x - ext / 2, 0.0, Center.z + ext / 2));
+		Children[1].Initialzie(indices, nrIndices, Device, m / 2, n / 2, Vtemp2, layer - 1, ext / 2, XMFLOAT3(Center.x + ext / 2, 0.0, Center.z + ext / 2));
+		Children[2].Initialzie(indices, nrIndices, Device, m / 2, n / 2, Vtemp3, layer - 1, ext / 2, XMFLOAT3(Center.x - ext / 2, 0.0, Center.z - ext / 2));
+		Children[3].Initialzie(indices, nrIndices, Device, m / 2, n / 2, Vtemp4, layer - 1, ext / 2, XMFLOAT3(Center.x + ext / 2, 0.0, Center.z - ext / 2));
 	}
 	else
 	{
@@ -146,11 +146,6 @@ void QuadTree::Initialzie(UINT* Ind, int NrIn, ID3D11Device* Device, UINT m, UIN
 
 	Device->CreateBuffer(&vbdesc, &Data, &VertexB);
 
-	//Bounding box
-	XMVECTOR p1 = XMVectorSet(Center.x + ext, Center.y + ext, Center.z + ext, 1.0);
-	XMVECTOR p2 = XMVectorSet(Center.x - ext, Center.y - ext, Center.z - ext, 1.0);
-	box.CreateFromPoints(box, p1, p2);
-
 	BoundingBox testBox(Center, XMFLOAT3(ext, ext, ext));
 
 	box = testBox;
@@ -159,9 +154,8 @@ void QuadTree::Initialzie(UINT* Ind, int NrIn, ID3D11Device* Device, UINT m, UIN
 void QuadTree::Render(ID3D11DeviceContext* DeviceContext, const XMMATRIX &projection, const XMMATRIX &view, const XMMATRIX &World)
 {
 	//Frust på Projection sen multiplicera med inverse proj inverse view iverse world.
-	BoundingFrustum frust;//göra om frustumet till worldspace för boxarna...
+	BoundingFrustum frust(projection);//göra om frustumet till worldspace för boxarna...
 
-	frust.CreateFromMatrix(frust, projection);
 	frust.Transform(frust, XMMatrixInverse(nullptr, view));//FUNKAR TESTAT!
 
 	//BoundingFrustum test;
@@ -226,6 +220,7 @@ void QuadTree::Render(ID3D11DeviceContext* DeviceContext, const XMMATRIX &projec
 		DeviceContext->DrawIndexed(nrIndices, 0, 0);
 		break;
 	}
+
 	//just to se if it renders...
 
 	//UINT32 vertexSize = sizeof(Vertex);
