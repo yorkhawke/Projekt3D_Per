@@ -102,7 +102,6 @@ void QuadTree::Initialzie(UINT* Ind, int NrIn, ID3D11Device* Device, UINT m, UIN
 
 	if (layer!=0)
 	{
-
 		Children[0].Initialzie(indices, nrIndices, Device, m / 2, n / 2, Vtemp1, layer - 1, ext / 2, XMFLOAT3(Center.x - ext / 2, 0.0, Center.z + ext / 2));
 		Children[1].Initialzie(indices, nrIndices, Device, m / 2, n / 2, Vtemp2, layer - 1, ext / 2, XMFLOAT3(Center.x + ext / 2, 0.0, Center.z + ext / 2));
 		Children[2].Initialzie(indices, nrIndices, Device, m / 2, n / 2, Vtemp3, layer - 1, ext / 2, XMFLOAT3(Center.x - ext / 2, 0.0, Center.z - ext / 2));
@@ -114,9 +113,7 @@ void QuadTree::Initialzie(UINT* Ind, int NrIn, ID3D11Device* Device, UINT m, UIN
 		delete[] indices;
 		indices = Ind;
 		nrIndices = NrIn;
-	}
-
-	// indexBuffer
+			// indexBuffer
 	D3D11_BUFFER_DESC IndexBufferDesc;
 	IndexBufferDesc.Usage = D3D11_USAGE_DEFAULT;
 	IndexBufferDesc.ByteWidth = nrIndices*sizeof(UINT);
@@ -145,8 +142,8 @@ void QuadTree::Initialzie(UINT* Ind, int NrIn, ID3D11Device* Device, UINT m, UIN
 	Data.pSysMem = vertexs;
 
 	Device->CreateBuffer(&vbdesc, &Data, &VertexB);
-
-	BoundingBox testBox(Center, XMFLOAT3(ext, ext, ext));
+	}
+	BoundingBox testBox(Center, XMFLOAT3(ext, 300, ext));
 
 	box = testBox;
 }
@@ -210,15 +207,24 @@ void QuadTree::Render(ID3D11DeviceContext* DeviceContext, const XMMATRIX &projec
 		}
 		break;
 	case 2:
-		UINT32 vertexSize = sizeof(Vertex);
-		UINT32 offset = 0;
+		if (!leaf)
+		{
+			for (int i = 0; i < 4; i++)
+			{
+				Children[i].Render(DeviceContext, projection, view, World);
+			}
+		}
+		else
+		{
+			UINT32 vertexSize = sizeof(Vertex);
+			UINT32 offset = 0;
 
-		DeviceContext->IASetIndexBuffer(IndexB, DXGI_FORMAT_R32_UINT, 0);
+			DeviceContext->IASetIndexBuffer(IndexB, DXGI_FORMAT_R32_UINT, 0);
 
-		DeviceContext->IASetVertexBuffers(0, 1, &VertexB, &vertexSize, &offset);
-		DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-		DeviceContext->DrawIndexed(nrIndices, 0, 0);
-		break;
+			DeviceContext->IASetVertexBuffers(0, 1, &VertexB, &vertexSize, &offset);
+			DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+			DeviceContext->DrawIndexed(nrIndices, 0, 0);
+		}
 	}
 
 	//just to se if it renders...
