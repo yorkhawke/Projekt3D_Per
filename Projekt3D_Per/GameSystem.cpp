@@ -275,8 +275,8 @@ void GameSystem::Render()
 	deviceContext->VSSetConstantBuffers(1, 1, &SunBuffer);
 	shadow.prepRun(deviceContext);
 
-	hMap.renderFrustCull(deviceContext, cam.GetProjMa(),cam.GetViewMa(),tesmp);
-	//hMap.render(deviceContext); 
+	//hMap.renderFrustCull(deviceContext, cam.GetProjMa(), cam.GetViewMa(), tesmp);
+	hMap.render(deviceContext); 
 	obj.render(deviceContext);
 
 	shadow.close(deviceContext);
@@ -291,6 +291,7 @@ void GameSystem::Render()
 	deviceContext->VSSetConstantBuffers(0, 1, &MatrixBuffer);
 	//draw obj
 	hMap.renderFrustCull(deviceContext, cam.GetProjMa(), cam.GetViewMa(), tesmp);
+
 	//hMap.render(deviceContext);
 	obj.render(deviceContext);
 

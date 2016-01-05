@@ -151,6 +151,9 @@ void QuadTree::Initialzie(UINT* Ind, int NrIn, ID3D11Device* Device, UINT m, UIN
 	XMVECTOR p2 = XMVectorSet(Center.x - ext, Center.y - ext, Center.z - ext, 1.0);
 	box.CreateFromPoints(box, p1, p2);
 
+	BoundingBox testBox(Center, XMFLOAT3(ext, ext, ext));
+
+	box = testBox;
 }
 
 void QuadTree::Render(ID3D11DeviceContext* DeviceContext, const XMMATRIX &projection, const XMMATRIX &view, const XMMATRIX &World)
@@ -209,7 +212,6 @@ void QuadTree::Render(ID3D11DeviceContext* DeviceContext, const XMMATRIX &projec
 
 			DeviceContext->IASetVertexBuffers(0, 1, &VertexB, &vertexSize, &offset);
 			DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-			//DeviceContext->Draw(nrVertexes, 0);
 			DeviceContext->DrawIndexed(nrIndices, 0, 0);
 		}
 		break;
@@ -221,7 +223,6 @@ void QuadTree::Render(ID3D11DeviceContext* DeviceContext, const XMMATRIX &projec
 
 		DeviceContext->IASetVertexBuffers(0, 1, &VertexB, &vertexSize, &offset);
 		DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-		//DeviceContext->Draw(nrVertexes, 0);
 		DeviceContext->DrawIndexed(nrIndices, 0, 0);
 		break;
 	}
