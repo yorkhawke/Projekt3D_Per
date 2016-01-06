@@ -254,7 +254,6 @@ void GameSystem::Render()
 	gameTime.Update();
 	//gameTime.ShowFPS();
 
-
 	cam.Update();
 	//UPPDATING MATRIXBUFFER
 	//Check for input

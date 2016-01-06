@@ -151,7 +151,7 @@ void QuadTree::Initialzie(UINT* Ind, int NrIn, ID3D11Device* Device, UINT m, UIN
 	Device->CreateBuffer(&vbdesc, &Data, &VertexB);
 	}
 
-	BoundingBox testBox(Center, XMFLOAT3(ext, 100, ext));
+	BoundingBox testBox(Center, XMFLOAT3(ext+5, 10, ext+5));
 
 	box = testBox;
 }
@@ -159,9 +159,32 @@ void QuadTree::Initialzie(UINT* Ind, int NrIn, ID3D11Device* Device, UINT m, UIN
 void QuadTree::Render(ID3D11DeviceContext* DeviceContext, const XMMATRIX &projection, const XMMATRIX &view, const XMMATRIX &World)
 {
 	//Frust på Projection sen multiplicera med inverse proj inverse view iverse world.
-	BoundingFrustum frust(projection);//göra om frustumet till worldspace för boxarna...
-
+	BoundingFrustum frust;//göra om frustumet till worldspace för boxarna...
+	frust.CreateFromMatrix(frust, projection);
 	frust.Transform(frust, XMMatrixInverse(nullptr, view));//FUNKAR TESTAT!
+
+
+	//if (frust.Intersects(box))
+	//{
+	//		if (!leaf)
+	//		{
+	//			for (int i = 0; i < 4; i++)
+	//			{
+	//				Children[i].Render(DeviceContext, projection,view,World);
+	//			}
+	//		}
+	//		else
+	//		{
+	//			UINT32 vertexSize = sizeof(Vertex);
+	//			UINT32 offset = 0;
+
+	//			DeviceContext->IASetIndexBuffer(IndexB, DXGI_FORMAT_R32_UINT, 0);
+
+	//			DeviceContext->IASetVertexBuffers(0, 1, &VertexB, &vertexSize, &offset);
+	//			DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	//			DeviceContext->DrawIndexed(nrIndices, 0, 0);
+	//		}
+
 
 	int testValue = frust.Contains(box);
 	switch (testValue)
@@ -188,7 +211,7 @@ void QuadTree::Render(ID3D11DeviceContext* DeviceContext, const XMMATRIX &projec
 			DeviceContext->DrawIndexed(nrIndices, 0, 0);
 		}
 		break;
-	case 2:
+	default:
 		if (!leaf)
 		{
 			for (int i = 0; i < 4; i++)
@@ -207,6 +230,7 @@ void QuadTree::Render(ID3D11DeviceContext* DeviceContext, const XMMATRIX &projec
 			DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 			DeviceContext->DrawIndexed(nrIndices, 0, 0);
 		}
+		break;
 	}
 }
 
