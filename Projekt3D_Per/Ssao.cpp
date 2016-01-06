@@ -1,4 +1,34 @@
 #include "SSao.h"
+SSao::SSao()
+{
+
+}
+
+SSao::~SSao()
+{
+	SSaoP->Release();
+	SSaoV->Release();
+	SSaoCF->Release();
+	SSaoCS->Release();
+
+
+
+	PixelBuffer->Release();
+	ScreenBuffer->Release();
+	blur->Release();
+	blur2->Release();
+
+	CShaderTex->Release();
+	CShaderTex2->Release();
+
+
+	ShaderRandTex->Release();
+	SSaoRTV->Release();
+	SSaoSRV->Release();
+	Layout->Release();
+	Pointsampler->Release();
+
+}
 
 void SSao::randomTex(ID3D11Device* dev, ID3D11DeviceContext *devCon)
 {
@@ -131,6 +161,8 @@ void SSao::startUp(ID3D11Device* dev, ID3D11DeviceContext *devCon)
 	dev->CreateUnorderedAccessView(GausTex, &UAVDesc, &blur);
 	dev->CreateUnorderedAccessView(GausTex2, &UAVDesc, &blur2);
 
+	GausTex->Release();
+	GausTex2->Release();
 	//GAUSSIAN FILTER
 
 	

@@ -28,7 +28,8 @@ private:
 	ID3D11Texture2D* SSaoTex;
 	ID3D11ShaderResourceView* SSaoSRV;
 public:
-
+	SSao();
+	~SSao();
 	void randomTex(ID3D11Device* dev, ID3D11DeviceContext *devCon);
 	void renderPass(ID3D11Device* dev, ID3D11DeviceContext* devCon, XMFLOAT4X4 projView);
 	void startUp(ID3D11Device* dev, ID3D11DeviceContext *devCon);

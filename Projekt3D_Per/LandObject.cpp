@@ -6,7 +6,7 @@ LandObject::LandObject()
 
 LandObject::~LandObject()
 {
-	IndexB->Release();
+	//delete HeightMap
 }
 
 float LandObject::getMapHeight(float x, float z)

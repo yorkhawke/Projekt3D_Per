@@ -29,18 +29,16 @@ public:
 
 	void Input(float time, HWND hwnd);
 
-private:
+protected:
 
 	//Vectors
 	XMVECTOR Up;
 	XMVECTOR Right;
 	XMVECTOR CamDir;
 	XMVECTOR Position;
-
 	//Matrix
 	XMFLOAT4X4 View;
 	XMFLOAT4X4 Proj;
-
 	//Input
 	POINT prevMouse;
 	POINT currMouse;

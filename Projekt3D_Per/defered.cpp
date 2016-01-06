@@ -13,6 +13,18 @@ Defered::~Defered()
 		ShaderResource[i]->Release();
 		renderTargetViewA[i]->Release();
 	}
+	GVertexShader->Release();
+	GPixelShader->Release();
+	GVertexLayout->Release();
+
+	DefVertexShader->Release();
+	DefPixelShader->Release();
+	GGeomShader->Release();
+	DefVertexLayout->Release();
+	backB->Release();
+	BackBuff->Release();
+
+	ScreenBuff->Release();
 
 }
 
@@ -241,8 +253,9 @@ void Defered::CloseBuffers(ID3D11DeviceContext* devCon)
 	ID3D11RenderTargetView* otemp = { NULL };
 	devCon->OMSetRenderTargets(1, &otemp, nullptr);
 
-	ID3D11ShaderResourceView* temp[BufferC+2] = { NULL };
-	devCon->PSSetShaderResources(0, BufferC+2, temp);
+	ID3D11ShaderResourceView* temp[BufferC + 2] = { NULL };
+	devCon->PSSetShaderResources(0, BufferC + 2, temp);
+
 }
 
 

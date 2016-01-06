@@ -7,7 +7,11 @@ ShadowMap::ShadowMap()
 
 ShadowMap::~ShadowMap()
 {
-
+	shadowMapVertexShader->Release();
+	ShaderDepth->Release();
+	depthStencilBuffer->Release();
+	//depthStencilState->Release();
+	ShadowStencilView->Release();
 }
 
 void ShadowMap::StartUp(ID3D11Device* device, ID3D11DeviceContext* devCon,Matrix light)
@@ -57,6 +61,7 @@ void ShadowMap::StartUp(ID3D11Device* device, ID3D11DeviceContext* devCon,Matrix
 
 	hr = device->CreateVertexShader(pSSVS->GetBufferPointer(), pSSVS->GetBufferSize(), nullptr, &shadowMapVertexShader);
 
+	pSSVS->Release();
 }
 
 void ShadowMap::prepRun(ID3D11DeviceContext* devCon)

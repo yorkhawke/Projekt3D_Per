@@ -7,6 +7,13 @@ QuadTree::QuadTree()
 
 QuadTree::~QuadTree()
 {
+	delete[] indices;
+	delete[] vertexs;
+
+	//IndexB->Release();
+	//VertexB->Release();
+
+	
 
 }
 
@@ -143,7 +150,8 @@ void QuadTree::Initialzie(UINT* Ind, int NrIn, ID3D11Device* Device, UINT m, UIN
 
 	Device->CreateBuffer(&vbdesc, &Data, &VertexB);
 	}
-	BoundingBox testBox(Center, XMFLOAT3(ext, 300, ext));
+
+	BoundingBox testBox(Center, XMFLOAT3(ext, 100, ext));
 
 	box = testBox;
 }
@@ -155,33 +163,7 @@ void QuadTree::Render(ID3D11DeviceContext* DeviceContext, const XMMATRIX &projec
 
 	frust.Transform(frust, XMMatrixInverse(nullptr, view));//FUNKAR TESTAT!
 
-	//BoundingFrustum test;
-	//test = frust;
-	//test.Transform(test, XMMatrixInverse(nullptr, World));
-
-	//if (leaf) // TEST
-	//{
-	//	UINT32 vertexSize = sizeof(Vertex);
-	//	UINT32 offset = 0;
-
-	//	DeviceContext->IASetIndexBuffer(IndexB, DXGI_FORMAT_R32_UINT, 0);
-
-	//	DeviceContext->IASetVertexBuffers(0, 1, &VertexB, &vertexSize, &offset);
-	//	DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	//	//DeviceContext->Draw(nrVertexes, 0);
-	//	DeviceContext->DrawIndexed(nrIndices, 0, 0);
-	//}
-	//else
-	//{
-	//	for (int i = 0; i < 4; i++)
-	//	{
-	//		Children[i].Render(DeviceContext, projection, view, World);
-	//	}
-	//}
-
 	int testValue = frust.Contains(box);
-	//Nått fel med frustum culling
-	
 	switch (testValue)
 	{
 	case 0:
@@ -226,17 +208,5 @@ void QuadTree::Render(ID3D11DeviceContext* DeviceContext, const XMMATRIX &projec
 			DeviceContext->DrawIndexed(nrIndices, 0, 0);
 		}
 	}
-
-	//just to se if it renders...
-
-	//UINT32 vertexSize = sizeof(Vertex);
-	//UINT32 offset = 0;
-
-	//DeviceContext->IASetIndexBuffer(IndexB, DXGI_FORMAT_R32_UINT, 0);
-
-	//DeviceContext->IASetVertexBuffers(0, 1, &VertexB, &vertexSize, &offset);
-	//DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-
-	//DeviceContext->DrawIndexed(nrIndices,0, 0);
 }
 

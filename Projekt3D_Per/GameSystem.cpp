@@ -24,7 +24,23 @@ GameSystem::GameSystem()
 
 GameSystem::~GameSystem()
 {
+	//VertexShader->Release();
+	//VertexLayout->Release();
+	//PixelShader->Release();
 
+	SampleState->Release();
+
+	//ScreenBuffer->Release();
+	MatrixBuffer->Release();
+	SunBuffer->Release();
+	LightBuffer->Release();
+	GeomBuff->Release();
+
+	Backbuffer->Release();
+
+	device->Release();
+	deviceContext->Release();
+	swapChain->Release();
 }
 
 HRESULT GameSystem::CreateSwapChain()
@@ -58,6 +74,7 @@ void GameSystem::StartGame(float gametime, float fps,HINSTANCE hinstance)
 
 	//Camera
 	cam.SetProj(0.35*XM_PI, ScreenWidth / (ScreenHeight*1.0f), 0.5f, 20000.0f);
+
 	cam.Update();
 	// dx
 	if (SUCCEEDED(CreateSwapChain()))
@@ -91,6 +108,8 @@ void GameSystem::StartGame(float gametime, float fps,HINSTANCE hinstance)
 	XMStoreFloat4x4(&matrix.Proj, XMMatrixTranspose(cam.GetProjMa()));
 	//CreateBuffer
 	CreateBuffers();
+
+	
 
 	hMap.CreateMap(256,256,256,256,device,deviceContext);
 	hMap.setupFrust(256, 256, device);
@@ -243,8 +262,8 @@ void GameSystem::Render()
 
 	//--------------UPDATING MATRIXES-----------------------------
 	XMFLOAT3 Pos = cam.getPos();
-	Pos.y = hMap.HMap(Pos.x, Pos.z) + 10.0f;
-	cam.setPos(Pos);
+	//Pos.y = hMap.HMap(Pos.x, Pos.z) + 10.0f;
+	//cam.setPos(Pos);
 
 	XMStoreFloat4x4(&matrix.View, XMMatrixTranspose(cam.GetViewMa()));
 	XMStoreFloat4x4(&matrix.Proj, XMMatrixTranspose(cam.GetProjMa()));
@@ -260,13 +279,16 @@ void GameSystem::Render()
 	temp->View =  matrix.View;
 	temp->Proj = matrix.Proj;
 	deviceContext->Unmap(MatrixBuffer, 0);
-	//XMFLOAT3 tempCP = { 10,40,100000 };//cam.getPos();
 	ZeroMemory(&MapDATA, sizeof(MapDATA));
 
 	deviceContext->Map(GeomBuff, 0, D3D11_MAP_WRITE_DISCARD, 0, &MapDATA);
 	memcpy(MapDATA.pData,&Pos, sizeof(XMFLOAT3));
 	deviceContext->Unmap(GeomBuff, 0);
 	//--------------UPDATING MATRIXES-----------------------------
+	//TEST
+	testView = XMMatrixLookAtLH(XMVectorSet(0.0, -100, 0.0, 1.0), XMVectorSet(Pos.x,Pos.y,Pos.z,1), XMVectorSet(0, 1, 0, 1));
+	//TEST
+
 	//Shadow
 	XMMATRIX tesmp = XMLoadFloat4x4(&matrix.World);
 
@@ -289,6 +311,7 @@ void GameSystem::Render()
 	DeferedRendering.OMSetRender(device, deviceContext, directX.getDepthView(deviceContext));
 
 	deviceContext->VSSetConstantBuffers(0, 1, &MatrixBuffer);
+
 	//draw obj
 	hMap.renderFrustCull(deviceContext, cam.GetProjMa(), cam.GetViewMa(), tesmp);
 

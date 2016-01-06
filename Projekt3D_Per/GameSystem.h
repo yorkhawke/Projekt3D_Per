@@ -40,7 +40,7 @@ private:
 	ID3D11Buffer* GeomBuff;
 	Matrix matrix;
 	//ShaderResources
-
+	XMMATRIX testView;
 	ID3D11RenderTargetView* Backbuffer;
 	//map
 	LandObject hMap;

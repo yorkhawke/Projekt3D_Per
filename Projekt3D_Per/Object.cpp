@@ -8,8 +8,10 @@ Entity::Entity()
 Entity::~Entity()
 {
 	Tex->Release();
-	delete Vertices;
-	delete indices;
+	//delete Vertices;
+	//delete indices;
+	VertexB->Release();
+	//IndexB->Release();
 }
 
 void Entity::createbuff(ID3D11Device* Device)

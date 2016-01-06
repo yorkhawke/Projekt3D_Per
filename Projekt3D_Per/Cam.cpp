@@ -1,6 +1,4 @@
 #include "Cam.h"
-
-
 Camera::Camera()
 {
 
@@ -47,6 +45,11 @@ void Camera::Input(float time, HWND hwnd)
 
 	if (GetAsyncKeyState('D') & 0x8000)
 		Strafe(50 * time);
+	if (GetAsyncKeyState(VK_SPACE))
+	{	
+		XMFLOAT3 temp = getPos();
+		setPos(XMFLOAT3(temp.x, temp.y+4.0, temp.z));
+	}
 
 	GetCursorPos(&currMouse);
 	ScreenToClient(hwnd, &currMouse);
