@@ -261,8 +261,11 @@ void GameSystem::Render()
 
 	//--------------UPDATING MATRIXES-----------------------------
 	XMFLOAT3 Pos = cam.getPos();
-	//Pos.y = hMap.HMap(Pos.x, Pos.z) + 10.0f;
-	//cam.setPos(Pos);
+	if (!cam.flying)
+	{
+	Pos.y = hMap.HMap(Pos.x, Pos.z) + 10.0f;
+	cam.setPos(Pos);
+	}
 
 	XMStoreFloat4x4(&matrix.View, XMMatrixTranspose(cam.GetViewMa()));
 	XMStoreFloat4x4(&matrix.Proj, XMMatrixTranspose(cam.GetProjMa()));

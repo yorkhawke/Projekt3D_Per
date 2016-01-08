@@ -152,8 +152,10 @@ void QuadTree::Initialzie(UINT* Ind, int NrIn, ID3D11Device* Device, UINT m, UIN
 	}
 
 	BoundingBox testBox(Center, XMFLOAT3(ext+5, 10, ext+5));
+	BoundingSphere testrund(Center, ext+5);
 
 	box = testBox;
+	sphere = testrund;
 }
 
 void QuadTree::Render(ID3D11DeviceContext* DeviceContext, const XMMATRIX &projection, const XMMATRIX &view, const XMMATRIX &World)
@@ -162,8 +164,6 @@ void QuadTree::Render(ID3D11DeviceContext* DeviceContext, const XMMATRIX &projec
 	BoundingFrustum frust;//göra om frustumet till worldspace för boxarna...
 	frust.CreateFromMatrix(frust, projection);
 	frust.Transform(frust, XMMatrixInverse(nullptr, view));//FUNKAR TESTAT!
-
-
 	//if (frust.Intersects(box))
 	//{
 	//		if (!leaf)
@@ -185,8 +185,7 @@ void QuadTree::Render(ID3D11DeviceContext* DeviceContext, const XMMATRIX &projec
 	//			DeviceContext->DrawIndexed(nrIndices, 0, 0);
 	//		}
 
-
-	int testValue = frust.Contains(box);
+	int testValue = frust.Contains(sphere);
 	switch (testValue)
 	{
 	case 0:

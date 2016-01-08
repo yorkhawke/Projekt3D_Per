@@ -22,6 +22,7 @@ public:
 	void Render(ID3D11DeviceContext* DeviceContext, const XMMATRIX &projection, const XMMATRIX &view, const XMMATRIX &World);
 protected:
 	BoundingBox box;
+	BoundingSphere sphere;
 };
 
 #endif

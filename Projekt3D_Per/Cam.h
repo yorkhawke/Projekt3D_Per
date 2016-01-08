@@ -25,12 +25,12 @@ public:
 	void MoveX(float angle);
 	void MoveY(float angle);
 	XMFLOAT3 getDir();
-
-
+	bool flying;
+	
 	void Input(float time, HWND hwnd);
 
 protected:
-
+	
 	//Vectors
 	XMVECTOR Up;
 	XMVECTOR Right;
