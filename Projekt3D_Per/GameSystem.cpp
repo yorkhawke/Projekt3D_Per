@@ -292,8 +292,6 @@ void GameSystem::Render()
 	//TEST
 
 	//Shadow
-	XMMATRIX tesmp = XMLoadFloat4x4(&matrix.World);
-
 	DeferedRendering.setLayout(deviceContext);
 
 	deviceContext->VSSetConstantBuffers(1, 1, &SunBuffer);
@@ -315,7 +313,7 @@ void GameSystem::Render()
 	deviceContext->VSSetConstantBuffers(0, 1, &MatrixBuffer);
 
 	//draw obj
-	hMap.renderFrustCull(deviceContext, cam.GetProjMa(), cam.GetViewMa(), tesmp);
+	hMap.renderFrustCull(deviceContext, cam.GetProjMa(), cam.GetViewMa());
 
 	//hMap.render(deviceContext);
 	obj.render(deviceContext);

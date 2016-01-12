@@ -158,12 +158,16 @@ void QuadTree::Initialzie(UINT* Ind, int NrIn, ID3D11Device* Device, UINT m, UIN
 	sphere = testrund;
 }
 
-void QuadTree::Render(ID3D11DeviceContext* DeviceContext, const XMMATRIX &projection, const XMMATRIX &view, const XMMATRIX &World)
+void QuadTree::Render(ID3D11DeviceContext* DeviceContext, const XMMATRIX &projection, const XMMATRIX &view)
 {
 	//Frust på Projection sen multiplicera med inverse proj inverse view iverse world.
+
+
 	BoundingFrustum frust;//göra om frustumet till worldspace för boxarna...
+
 	frust.CreateFromMatrix(frust, projection);
 	frust.Transform(frust, XMMatrixInverse(nullptr, view));//FUNKAR TESTAT!
+
 	//if (frust.Intersects(box))
 	//{
 	//		if (!leaf)
@@ -195,7 +199,7 @@ void QuadTree::Render(ID3D11DeviceContext* DeviceContext, const XMMATRIX &projec
 		{
 			for (int i = 0; i < 4; i++)
 			{
-				Children[i].Render(DeviceContext, projection,view,World);
+				Children[i].Render(DeviceContext, projection,view);
 			}
 		}
 		else
@@ -215,7 +219,7 @@ void QuadTree::Render(ID3D11DeviceContext* DeviceContext, const XMMATRIX &projec
 		{
 			for (int i = 0; i < 4; i++)
 			{
-				Children[i].Render(DeviceContext, projection, view, World);
+				Children[i].Render(DeviceContext, projection, view);
 			}
 		}
 		else
