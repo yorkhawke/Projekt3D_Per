@@ -51,6 +51,8 @@ private:
 	DirectionalLight Sun;
 	ShadowMap shadow;
 
+	XMMATRIX viewLock;
+	bool frustLock=false;
 public:
 	GameSystem();
 	~GameSystem();

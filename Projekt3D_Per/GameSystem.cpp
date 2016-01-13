@@ -297,7 +297,7 @@ void GameSystem::Render()
 	deviceContext->VSSetConstantBuffers(1, 1, &SunBuffer);
 	shadow.prepRun(deviceContext);
 
-	//hMap.renderFrustCull(deviceContext, cam.GetProjMa(), cam.GetViewMa(), tesmp);
+	//hMap.renderFrustCull(deviceContext, cam.GetProjMa(), cam.GetViewMa());
 	hMap.render(deviceContext); 
 	obj.render(deviceContext);
 
@@ -313,9 +313,25 @@ void GameSystem::Render()
 	deviceContext->VSSetConstantBuffers(0, 1, &MatrixBuffer);
 
 	//draw obj
-	hMap.renderFrustCull(deviceContext, cam.GetProjMa(), cam.GetViewMa());
+	if (GetAsyncKeyState('L') & 0x8000)
+	{
+		if (frustLock)
+			frustLock = false;
+		else
+			frustLock = true;
+	}
 
-	hMap.render(deviceContext);
+	if (!frustLock)
+	{
+		viewLock = cam.GetViewMa();
+	}
+
+
+
+
+	hMap.renderFrustCull(deviceContext, cam.GetProjMa(),viewLock);
+
+	//hMap.render(deviceContext);
 	obj.render(deviceContext);
 
 	DeferedRendering.nullRender(deviceContext);
