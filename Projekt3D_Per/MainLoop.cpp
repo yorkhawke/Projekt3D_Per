@@ -2,7 +2,7 @@
 #include <io.h>
 #include <fcntl.h>
 #include <d3d11.h>
-
+#include <crtdbg.h>
 #include "GameSystem.h"
 
 
@@ -15,7 +15,8 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 	AllocConsole();
 
 
-
+	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
+	_CrtSetBreakAlloc(789);
 	HANDLE handle_out = GetStdHandle(STD_OUTPUT_HANDLE);
 	int hCrt = _open_osfhandle((long)handle_out, _O_TEXT);
 	FILE* hf_out = _fdopen(hCrt, "w");

@@ -7,12 +7,12 @@ Dx::Dx()
 
 Dx::~Dx()
 {
-	//swapChain->Release();
 	depthStencilBuffer->Release();
-	//depthStencilState->Release();
+    //depthStencilState->Release();
 	depthStencilView->Release();
 	rasterState->Release();
 	ShaderDepth->Release();
+	//swapChain->Release();
 
 }
 

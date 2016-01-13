@@ -25,9 +25,9 @@ SSao::~SSao()
 	ShaderRandTex->Release();
 	SSaoRTV->Release();
 	SSaoSRV->Release();
+	SSaoTex->Release();
 	Layout->Release();
 	Pointsampler->Release();
-
 }
 
 void SSao::randomTex(ID3D11Device* dev, ID3D11DeviceContext *devCon)
@@ -66,6 +66,9 @@ void SSao::randomTex(ID3D11Device* dev, ID3D11DeviceContext *devCon)
 
 	hr = dev->CreateTexture1D(&texDesc, &indata, &randomTex);
 
+	if (ShaderRandTex)
+		ShaderRandTex->Release();
+
 	D3D11_SHADER_RESOURCE_VIEW_DESC viewD;
 	viewD.Format = texDesc.Format;
 	viewD.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE1D;
@@ -75,7 +78,7 @@ void SSao::randomTex(ID3D11Device* dev, ID3D11DeviceContext *devCon)
 	hr = dev->CreateShaderResourceView(randomTex, &viewD, &ShaderRandTex);
 
 	devCon->PSSetShaderResources(4, 1, &ShaderRandTex);
-
+	randomTex->Release();
 }
 
 

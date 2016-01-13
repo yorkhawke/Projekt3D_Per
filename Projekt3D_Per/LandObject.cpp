@@ -7,6 +7,11 @@ LandObject::LandObject()
 LandObject::~LandObject()
 {
 	//delete HeightMap
+	for (int i = 0; i < 256; i++)
+		delete[] HeightMap[i];
+	delete[] HeightMap;
+	delete[] indices;
+	delete[] Vertices;
 }
 
 float LandObject::getMapHeight(float x, float z)
@@ -59,7 +64,7 @@ void LandObject::detail(int m, int n)
 	{
 		delete temp[i];
 	}
-
+	delete[] temp;
 }
 
 float LandObject::averageH(int i, int j)
@@ -122,7 +127,6 @@ void LandObject::HMap(int m, int n, const string& fileName, float HeightScale, f
 	for (int i = 0; i < m; i++)
 	{
 		HeightMap[i] = new float[n];
-
 	}
 
 	for (int i = 0; i < m; i++)
@@ -157,11 +161,8 @@ void LandObject::Indices(int m, int n)
 			indices[k + 4] = i*n + j + 1;
 			indices[k + 5] = (i + 1)*n + j + 1;
 			k += 6;
-
 		}
-
 	}
-
 }
 
 void LandObject::CreateMap(int width, int height, UINT m, UINT n, ID3D11Device* device, ID3D11DeviceContext* devCont)
@@ -250,6 +251,7 @@ void LandObject::CreateMap(int width, int height, UINT m, UINT n, ID3D11Device* 
 	D3D11_SUBRESOURCE_DATA Indexdata;
 	Indexdata.pSysMem = indices;
 	hr = device->CreateBuffer(&IndexBufferDesc, &Indexdata, &IndexB);
+
 }
 
 void LandObject::renderFrustCull(ID3D11DeviceContext* devCont, const XMMATRIX &projection, const XMMATRIX &view)

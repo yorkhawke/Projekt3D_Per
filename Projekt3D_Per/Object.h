@@ -18,7 +18,6 @@ public:
 	void createTexture(ID3D11Device* device, ID3D11DeviceContext* devCont, const wchar_t* filename);
 
 protected:
-
 	UINT* indices;
 	Vertex* Vertices;
 	ID3D11ShaderResourceView* Tex;

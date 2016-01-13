@@ -288,7 +288,7 @@ void GameSystem::Render()
 	deviceContext->Unmap(GeomBuff, 0);
 	//--------------UPDATING MATRIXES-----------------------------
 	//TEST
-	testView = XMMatrixLookAtLH(XMVectorSet(0.0, -100, 0.0, 1.0), XMVectorSet(Pos.x,Pos.y,Pos.z,1), XMVectorSet(0, 1, 0, 1));
+	//testView = XMMatrixLookAtLH(XMVectorSet(0.0, -100, 0.0, 1.0), XMVectorSet(Pos.x,Pos.y,Pos.z,1), XMVectorSet(0, 1, 0, 1));
 	//TEST
 
 	//Shadow
@@ -315,7 +315,7 @@ void GameSystem::Render()
 	//draw obj
 	hMap.renderFrustCull(deviceContext, cam.GetProjMa(), cam.GetViewMa());
 
-	//hMap.render(deviceContext);
+	hMap.render(deviceContext);
 	obj.render(deviceContext);
 
 	DeferedRendering.nullRender(deviceContext);

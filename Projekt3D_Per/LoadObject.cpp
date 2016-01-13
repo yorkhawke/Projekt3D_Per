@@ -7,7 +7,8 @@ LoadObject::LoadObject()
 
 LoadObject::~LoadObject()
 {
-
+	delete[] Vertices;
+	delete[] indices;
 }
 
 void LoadObject::LoadObjFile(wstring fileName)
