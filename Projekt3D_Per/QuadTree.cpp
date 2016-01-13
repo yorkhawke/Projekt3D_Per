@@ -2,7 +2,11 @@
 
 QuadTree::QuadTree()
 {
-
+	IndexB = 0;
+	VertexB = 0;
+	indices = 0;
+	vertexs = 0;
+	Children = 0;
 }
 
 QuadTree::~QuadTree()
@@ -10,16 +14,15 @@ QuadTree::~QuadTree()
 
 	//delete vertexs;
 	delete[] indices;
+	delete[] vertexs;
 	if (leaf)
 	{
-	IndexB->Release();
-	VertexB->Release();
-	}
-	else
-	{
-	delete[] Children;
+		IndexB->Release();
+		VertexB->Release();
+		
 	}
 
+	delete[] Children;
 }
 
 void QuadTree::Initialzie(UINT* Ind, int NrIn, ID3D11Device* Device, UINT m, UINT n, Vertex* vertex,int layer,int ext,XMFLOAT3 Center)
@@ -27,23 +30,23 @@ void QuadTree::Initialzie(UINT* Ind, int NrIn, ID3D11Device* Device, UINT m, UIN
 	//indices = Ind;
 	//nrIndices = NrIn;
 	vertexs = new Vertex[m*n];
-	vertexs = vertex;
+
+	for (int i = 0; i < m*n; i++)
+	{
+		vertexs[i] = vertex[i];
+	}
 	nrVertexes = m*n;
-	//UINT* temp1 = new UINT[NrIn / 4];
-	//UINT* temp2 = new UINT[NrIn / 4];
-	//UINT* temp3 = new UINT[NrIn / 4];
-	//UINT* temp4 = new UINT[NrIn / 4];
+
 
 	Vertex* Vtemp1 = new Vertex[m*n / 4+m+n];
 	Vertex* Vtemp2 = new Vertex[m*n / 4+m+n];
 	Vertex* Vtemp3 = new Vertex[m*n / 4+m+n];
 	Vertex* Vtemp4 = new Vertex[m*n / 4+m+n];
-	if (leaf)
-	{
 
-	}
-	else
-		Children = new QuadTree[4];
+	Children = new QuadTree[4];
+
+
+		
 
 	//VERTEXES
 
@@ -127,8 +130,6 @@ void QuadTree::Initialzie(UINT* Ind, int NrIn, ID3D11Device* Device, UINT m, UIN
 	else
 	{
 	leaf = true;
-	//delete[] indices;
-	//indices = Ind;
 	nrIndices = NrIn;
 	indices = new UINT[nrIndices];
 	for (int i = 0; i < NrIn; i++)
