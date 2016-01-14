@@ -54,11 +54,11 @@ float main(in float4 screenPos : SV_Position) : SV_TARGET
 		texC.y = (-temp.y + 1.0)*0.5f;
 
 		float3 Occluder = Position.Sample(pointSampler, texC).xyz;
-		float z = distance(Pos.xyz, Occluder);
+		float z = distance(Pos.xyz, Occluder);//Finde the distance beteween the occlude and the occluder
 
-		float distF = 1.0f - smoothstep(0.1f, 3.0f, z);
-		float3 directionOclud = normalize(Occluder - Pos);
-		occlusion += distF*max(dot(normal, directionOclud), 0);
+		float distF = 1.0f - smoothstep(0.1f, 3.0f, z);//weight
+		float3 directionOclud = normalize(Occluder - Pos);//measure how mutch the point is in from of the plane
+		occlusion += distF*max(dot(normal, directionOclud), 0);//Check and add the weights
 
 	}
 	occlusion /= 16.0f;
