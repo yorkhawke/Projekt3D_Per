@@ -37,10 +37,11 @@ float4 main(in float4 screenPos : SV_Position) : SV_TARGET
 	float4 normal = Normal.Load(sampleIndices);
 	float Occ = Occlusion.Load(sampleIndices); 
 
+	//return float4(Occ, Occ, Occ, 1.0f); //SHOW SSAO CHECK
+
 	float4 D = float4(0.0f, 0.0f, 0.0f, 0.0f);
 	float4 S = float4(0.0f, 0.0f, 0.0f, 0.0f);
 	float3 lightVector = normalize(SunPosition);
-	//return float4(Occ, Occ, Occ, 1.0f); //To check occlusion
 	A = materialAmbient*Ambient;
 	
 	float3 toEye = normalize(screenPos.xyz - Pos.xyz);
@@ -71,6 +72,7 @@ float4 main(in float4 screenPos : SV_Position) : SV_TARGET
 	if (d + bias < ShadowPH.z)
 		shade = 0.5f;
 
+	//return float4(d, d, d, 1.0); //SHOW SHADOWMAP
 
 	finalCol = Text*(A*Occ + (shade*D)) + S*shade;
 
