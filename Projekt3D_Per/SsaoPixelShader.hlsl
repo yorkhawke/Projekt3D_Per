@@ -39,16 +39,17 @@ float main(in float4 screenPos : SV_Position) : SV_TARGET
 	float4 normal = Normal.Load(sampleIndices);
 	float occlusion = 0;
 	float3 randomV = normalize(Rand.Sample(pointSampler, screenPos.x*screenPos.y).xyz);
-
+		//sampling nerby points
 	for (int i = 0; i < 16; i++)
 	{
 		float3 ref = reflect(gRandomSphereVectors[i], randomV);
-		float3 temp = Pos.xyz + 0.5*sign(dot(ref, normal.xyz))*ref;
 
-		float4 projected = mul(float4(temp, 1.0f), projview);
+		float3 temp = Pos.xyz + 0.5*sign(dot(ref, normal.xyz))*ref;//adds vector to pos, if vector is point behind plane,flips it..
+
+		float4 projected = mul(float4(temp, 1.0f), projview); //projects the vector to viewproj space.
 		temp = projected.xyz / projected.w;
 
-		float2 texC;
+		float2 texC;		//Projected tex-coords
 		texC.x = (temp.x + 1.0)*0.5f;
 		texC.y = (-temp.y + 1.0)*0.5f;
 
