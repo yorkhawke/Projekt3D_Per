@@ -6,6 +6,22 @@
 #include "GameSystem.h"
 
 
+//-----------------------------------------------------------------------
+//		 _________________________________________________________		
+//		|				PROJECT CHECKLIST						  |
+//		|														  |
+//		| 														  |
+//		|	1. Defered Rendering. CHECK							  |
+//		|	2.Parsing and rendering OBJ. CHECK					  |
+//		|	3. Height-map were you can walk on terrain. CHECK	  |
+//		|	4. Dynamic fucking ambient Occlusion. CHECK			  |
+//		|	5. Shadow mapping. CHECK							  |
+//		|	6. View frustum culling using QuadTree. CHECK		  |
+//		|	7. Back-facee culling with Geometry shader. CHECK	  |
+//		|	8-9. Gaussian filter done by Compute Shader. CHECK	  |
+//		|_________________________________________________________|
+
+
 int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLine, int nCmdShow)
 {
 	MSG msg = { 0 };
