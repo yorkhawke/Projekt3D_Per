@@ -18,11 +18,10 @@ private:
 public:
 	QuadTree();
 	~QuadTree();
-	void Initialzie(UINT* Ind, int NrIn, ID3D11Device* Device, UINT m, UINT n, Vertex* vertex,int layer,int ext,XMFLOAT3 Center);
+	void Initialzie(ID3D11Device* Device, UINT m, UINT n, Vertex* vertex,int layer,int ext,XMFLOAT3 Center);
 	void Render(ID3D11DeviceContext* DeviceContext, const XMMATRIX &projection, const XMMATRIX &view);
 protected:
 	BoundingBox box;
-	BoundingSphere sphere;
 };
 
 #endif
